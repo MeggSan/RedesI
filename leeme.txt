@@ -1,0 +1,78 @@
+/* 
+ * Archivo: LEEME.txt
+ *
+ * Este LEEME.txt contiene los nombres de archivos necesarios para la aplicación de sockets,
+ * y sus respectivas funcionalidades, que hace el programa, como se ejecuta el
+ * mismo y si posee alguna particularidad
+ *
+ * Autores: Cristina Betancourt # Carnet 11-10104
+ *  		Meggie Sanchez      # Carnet 11-10939
+ */
+
+ Al momento de abrir la carpeta usted vera los siguientes archivos:
+
+     * Makefile : 
+          Contiene los comandos para la ejecucion y eliminado de los
+          ejecutables, archivos objeto (.o), y cualquier otro archivo 
+          generado automaticamente a partir de los fuentes.
+
+     * tcpcliente.c : 
+          Programa principal en donde se compone "literatura aleatoria", a
+          traves de la comunicacion entre procesos y manejo de directorios. 
+
+     * tcpservidor.c : 
+          Archivo de implementacion, contiene las funciones necesarias para 
+          acceder al sistema de archivos y trabajar con pipes.
+     _________________________________________________________________________
+
+     La aplicacion fue realizada en lenguaje C, y ejecutada con el compilador 
+     gcc en los S.O. Debian 8.0 y Ubuntu 14.04. El programa fue probado para
+     su correcta compilación y ejecución en diversas máquinas del LDC,
+     como por ejemplo en la máquina harq.
+     _________________________________________________________________________
+
+
+     Para la invocación a la ejecución del programa:
+
+     Pasos:    1) Compilar la aplicacion, haciendo uso del comando make en el 
+               terminal.
+
+               2) Ejecutar la aplicacion mediante el siguiente formato de
+               invocación:
+
+               ./MiCuento [-d directorio] <n> <m> <salida>
+
+               -d directorio, Directorio
+                    Especifica un directorio donde se encuentran los
+                    directorios de archivos. Si no se especifica, se 
+                    considera el directorio actual.
+
+               n, Hijos
+                    Se refiere al numero de procesos hijos que considera
+                    el padre.
+
+               m, Archivos
+                    Indica la cantidad de archivos que cada proceso hijo
+                    selecciona aleatoriamente.
+
+               salida
+                    Nombre del archivo que contendra el cuento final.
+
+               3) Despues de probar la aplicacion, haciendo uso del comando
+               make clean, se borran todos los ejecutables generados en la 
+               compilacion.
+
+_________________________________________________________________________
+
+     La implementacion del programa:
+
+     Se utilizo un pipe para la comunicacion entre los procesos, cada hijo 
+     va concatenando los archivos que ha leido en un buffer y al terminar 
+     se los envia al proceso padre mediante la escritura del buffer en el 
+     pipe. A continuacion, el proceso padre realiza la lectura del pipe, 
+     obtiene los textos de los procesos hijos y finalmente los imprime en 
+     un archivo de salida definido por el usuario.
+
+     Un aspecto que vale la pena resaltar es que la constante "TAM2" se
+     utiliza por defecto para manejar textos de un maximo de 1.048.576 
+     caracteres.
