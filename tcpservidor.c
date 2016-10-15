@@ -9,9 +9,35 @@
 
 #include "tcpservidor.h"
 
+int MaxClientes(int socket, struct sockaddr_in direcc) {
+
+	int contador;
+    char buffer[TAMBUFFER];
+    
+    memset(buffer, 0, TAMBUFFER);
+    sprintf(buffer, " Todos los cajeros estan en uso. Por favor, intente mas tarde \n");
+
+    if ((contador = send(socket, buffer, strlen(buffer), 0)) == -1) {
+		perror(" No puedo enviar información \n");
+		exit(-1);
+	}
+    
+    close(socket);
+
+    return 0; 
+}
+
+int CajeroCliente(int socket, struct sockaddr_in direcc) {
+
+	while(1) {
+		printf(" Conexion \n");
+	}
+	return 0;
+}
+
 int main(int argc, char *argv[]) {
 
-	/* Fichero descriptor */
+	/* Ficheros descriptores */
 	int fp, fp2;
 
 	/* Estructura necesaria para acceder a la información del servidor */
@@ -21,6 +47,11 @@ int main(int argc, char *argv[]) {
 	struct sockaddr_in cliente;
 
 	int sin_size;
+	int childpid;   /* Proceso id del hijo */
+	int countchild; /* Contador para el número de hijos */
+	int pidstatus;  /* Estado del proceso hijo */
+
+	fd_set fps;        /* Conjunto de ficheros descriptores */
 
 	/* Verificación para ver si el socket se creo correctamente */
 	if ((fp = socket(AF_INET, SOCK_STREAM, 0)) == -1) {  
@@ -50,18 +81,58 @@ int main(int argc, char *argv[]) {
 
 	while(1) {
 
+		FD_ZERO(&fps); /* Limpia el conjunto de descriptores */
+    	FD_SET(fp, &fps); /* Se agrega el descriptor del socket al 
+    					     conjunto de descriptores */ 
+
 		sin_size = sizeof(struct sockaddr_in);
-		/* A continuación la llamada a accept() */
-		if ((fp2 = accept(fp, (struct sockaddr *)&cliente,
-			&sin_size)) == -1) {
-			perror(" Error en accept() \n");
-			exit(-1);
+
+		if (select(fp+1, &fps, NULL, NULL, NULL)) {
+
+			/* A continuación la llamada a accept() */
+			if ((fp2 = accept(fp, (struct sockaddr *)&cliente,
+				&sin_size)) == -1) {
+				perror(" Error en accept() \n");
+				exit(-1);
+			}
+			else {
+				printf("\n Se ha conectado %s por su puerto %d\n", inet_ntoa(cliente.sin_addr), cliente.sin_port);
+				
+				childpid = fork(); /* Creamos un nuevo proceso hijo */
+				printf("HOLAAAAAAA");
+				if (childpid == -1) {
+					perror(" No se pudo crear el proceso hijo \n");
+					exit(-1);
+				}
+
+				else if (childpid == 0) {
+					printf("HOLA3");
+					printf("\n countchild %d", countchild);
+					if (MAXCAJEROS > countchild)
+						exit(CajeroCliente(fp2, cliente));
+					else
+						printf("\n LALALALALALA %d", countchild);
+						exit(MaxClientes(fp2, cliente));
+				}
+
+				else {
+					printf("hola2");
+					countchild ++;
+					close(fp2);
+				}
+			}
 		}
 
-		printf("Se obtuvo una conexión desde %s\n", inet_ntoa(cliente.sin_addr)); 
+		childpid = waitpid(0, &pidstatus, WNOHANG);
 
-		send(fp2,"Bienvenido a mi servidor.\n", 25, 0); 
+		if (childpid > 0) {
+			countchild --;
+		}
 
-		close(fp2); 
-	}	
+		send(fp2, " Bienvenido a mi servidor.\n", 25, 0); 
+	}
+
+	close(fp2);
+
+	return 0;	
 }
