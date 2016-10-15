@@ -12,7 +12,7 @@
 int main(int argc, char *argv[]) {
 
 	/* Fichero descriptor */
-	int fp;
+	int fp, numbytes;
 
 	char buffer[TAMAXBYTES];
 
@@ -35,7 +35,7 @@ int main(int argc, char *argv[]) {
     }
 
     /* Verificación para ver si el socket se creo correctamente */
-    if ((fd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {  
+    if ((fp = socket(AF_INET, SOCK_STREAM, 0)) == -1) {  
 		perror(" Error en la funcion socket() \n");
 		exit(-1);
     }
@@ -44,9 +44,23 @@ int main(int argc, char *argv[]) {
     servidor.sin_port = htons(PUERTO);
     servidor.sin_addr = *((struct in_addr *)ipcentral->h_addr); 
 
+    bzero(&(servidor.sin_zero), 8);
 
+    /* */
+    if (connect(fp, (struct sockaddr *)&servidor,
+		sizeof(struct sockaddr)) == -1) { 
+		perror(" Error en connect() \n");
+		exit(-1);
+    }
 
-    printf(" Mensaje del Servidor: %s\n", buf); 
+    if ((numbytes = recv(fp, buffer, TAMAXBYTES, 0)) == -1) {  
+		perror(" error Error \n");
+		exit(-1);
+    }
+
+    buffer[numbytes] = '\0';
+
+    printf(" Mensaje del Servidor: %s\n", buffer); 
 
     close(fp);
 }

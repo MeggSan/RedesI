@@ -23,4 +23,8 @@
 
 /* Constantes necesarias */
 
+#define PUERTO 3550
+
+#define RESERVA 3 /* Conexiones permitidas */
+
 /* Declaración de funciones */
