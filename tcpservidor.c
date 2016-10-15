@@ -29,11 +29,16 @@ int MaxClientes(int socket, struct sockaddr_in direcc) {
 
 int CajeroCliente(int socket, struct sockaddr_in direcc) {
 
-	while(1) {
-		printf(" Conexion \n");
+	while(1){
+
+		if(0>1)
+			printf("Es mentira\n");
 	}
-	return 0;
+	close(socket);
+	return(0);
+
 }
+
 
 int main(int argc, char *argv[]) {
 
@@ -99,24 +104,19 @@ int main(int argc, char *argv[]) {
 				printf("\n Se ha conectado %s por su puerto %d\n", inet_ntoa(cliente.sin_addr), cliente.sin_port);
 				
 				childpid = fork(); /* Creamos un nuevo proceso hijo */
-				printf("HOLAAAAAAA");
 				if (childpid == -1) {
 					perror(" No se pudo crear el proceso hijo \n");
 					exit(-1);
 				}
 
 				else if (childpid == 0) {
-					printf("HOLA3");
-					printf("\n countchild %d", countchild);
 					if (MAXCAJEROS > countchild)
 						exit(CajeroCliente(fp2, cliente));
 					else
-						printf("\n LALALALALALA %d", countchild);
 						exit(MaxClientes(fp2, cliente));
 				}
 
 				else {
-					printf("hola2");
 					countchild ++;
 					close(fp2);
 				}
