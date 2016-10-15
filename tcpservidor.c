@@ -101,7 +101,6 @@ int main(int argc, char *argv[]) {
 				exit(-1);
 			}
 			else {
-				printf("\n Se ha conectado %s por su puerto %d\n", inet_ntoa(cliente.sin_addr), cliente.sin_port);
 				
 				childpid = fork(); /* Creamos un nuevo proceso hijo */
 				if (childpid == -1) {
@@ -110,8 +109,10 @@ int main(int argc, char *argv[]) {
 				}
 
 				else if (childpid == 0) {
-					if (MAXCAJEROS > countchild)
+					if (MAXCAJEROS > countchild){
+						printf("\n Se ha conectado %s por su puerto %d\n", inet_ntoa(cliente.sin_addr), cliente.sin_port);
 						exit(CajeroCliente(fp2, cliente));
+					}
 					else
 						exit(MaxClientes(fp2, cliente));
 				}
