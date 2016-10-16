@@ -14,6 +14,15 @@ int main(int argc, char *argv[]) {
 	/* Fichero descriptor */
 	int fp, numbytes;
 
+	/*Entero que representa el Puerto del servidor*/
+	int puerto;
+
+	/*Caracter que representa la operacion*/
+	char* operacion;
+
+	/*Entero que representa el codigo del usuario*/
+	int codigo_usuario;
+
 	char buffer[TAMAXBYTES];
 
 	/* Estructura necesaria para acceder a la información del ip */
@@ -22,17 +31,61 @@ int main(int argc, char *argv[]) {
 	/* Estructura necesaria para acceder a la información del servidor */
 	struct sockaddr_in servidor;
 
-	/* Verificación del IP en el argumento correspondiente */
-	if ((ipcentral = gethostbyname(argv[1])) == NULL) {       
-		perror(" Error en la funcion gethostbyname() \n");
-		exit(-1);
-    }
+	/* Verificacion de entrada de argumentos en el terminal*/
+	if(argc!=10){
+		printf("ERROR, la entrada correcta es: bsb_cli -d <nombre_modulo_atencion> -p <puerto_bsb_svr> -c <op> -i <codigo_usuario> \n");
+		exit(1);
+	}
+	
+	if  (strcmp("bsb_cli", argv[1])!=0){
+		printf(" Entrada incorrecta: Debe comenzar con bsb_cli\n");
+		exit(1);
+	}
 
-    /* Verificación de cantidad de argumentos explícitos en el terminal */
-    if (argc != 2) { 
-		printf(" No se ha colocado el numero de argumentos correctos");
-		exit(-1);
-    }
+	
+	int i;
+
+	for(i=2;i<9;i+=2){
+		
+		switch(argv[i][1]){
+			case 'd':
+				/* Verificación del IP en el argumento correspondiente */
+				if ((ipcentral = gethostbyname(argv[i+1])) == NULL) {       
+					perror(" Error en la funcion gethostbyname() \n");
+					exit(-1);
+			    }
+			    break;
+			
+			case 'p':
+				puerto = atoi(argv[i+1]);
+				break;
+			
+			case 'c':
+				if ((strcmp("d", argv[i+1])==0)|| (strcmp("r", argv[i+1])==0))
+					operacion = argv[i+1];
+				else{
+					perror("Error en la operacion a realizar \n");
+					exit(-1);
+				}
+				break;
+			
+			case 'i':
+				if(atoi(argv[i+1])>0 && atoi(argv[i+1])<1000)
+					codigo_usuario = atoi(argv[i+1]);
+				else{
+					perror("El codigo de usuario no se encuentra registrado\n");
+					exit(-1);
+				}
+				break;
+
+			default:
+				printf("Entrada incorrecta\n");
+				exit(1);
+		}
+
+	}
+
+	
 
     /* Verificación para ver si el socket se creo correctamente */
     if ((fp = socket(AF_INET, SOCK_STREAM, 0)) == -1) {  
@@ -41,7 +94,7 @@ int main(int argc, char *argv[]) {
     }
 
     servidor.sin_family = AF_INET;
-    servidor.sin_port = htons(PUERTO);
+    servidor.sin_port = htons(puerto);
     servidor.sin_addr = *((struct in_addr *)ipcentral->h_addr); 
 
     bzero(&(servidor.sin_zero), 8);
