@@ -18,7 +18,7 @@ int MaxClientes(int socket, struct sockaddr_in direcc) {
     sprintf(buffer, " Todos los cajeros estan en uso. Por favor, intente mas tarde \n");
 
     if ((contador = send(socket, buffer, strlen(buffer), 0)) == -1) {
-		perror(" No puedo enviar información \n");
+		perror(" No puedo enviar informacion \n");
 		exit(-1);
 	}
     
@@ -52,11 +52,27 @@ int main(int argc, char *argv[]) {
 	struct sockaddr_in cliente;
 
 	int sin_size;
-	int childpid;   /* Proceso id del hijo */
-	int countchild; /* Contador para el número de hijos */
-	int pidstatus;  /* Estado del proceso hijo */
 
-	fd_set fps;        /* Conjunto de ficheros descriptores */
+	/* Proceso id del hijo */
+	int childpid;  
+
+	/* Contador para el número de hijos */
+	int countchild; 
+
+	/* Estado del proceso hijo */
+	int pidstatus; 
+
+	/* Conjunto de ficheros descriptores */
+	fd_set fps;    
+
+	/* Entero que representa el Puerto del servidor */
+	int puerto;
+
+	/* Bitacora deposito (archivo) */
+	char ArchivoDeposito[64]; 
+
+	/* Bitacora retiro (archivo) */
+	char ArchivoRetiro[64];   
 
 	/* Verificación para ver si el socket se creo correctamente */
 	if ((fp = socket(AF_INET, SOCK_STREAM, 0)) == -1) {  
@@ -84,11 +100,48 @@ int main(int argc, char *argv[]) {
 		exit(-1);
 	}
 
+	if (strcmp("bsb_svr", argv[1]) != 0) {
+		printf(" Entrada incorrecta: Debe comenzar con bsb_svr\n");
+		exit(1);
+	}
+
+	/* Verificacion de entrada de argumentos en el terminal */
+	if (argc != 8) {
+		printf(" ERROR, la entrada correcta es: bsb_svr -l <puerto_bsb_svr> -i <bitacora_deposito> -o <bitacora_retiro> \n");
+		exit(1);
+	}
+
+	int i;
+
+	for(i = 2; i < 7; i += 2) {
+
+		switch(argv[i][1]) {
+			
+			case 'l':
+				puerto = atoi(argv[i+1]);
+				break;
+			
+			case 'i':
+				strcpy(ArchivoDeposito, argv[i+1]);
+				break;
+			
+			case 'o':
+				strcpy(ArchivoRetiro, argv[i+1]);
+				break;
+
+			default:
+				printf(" Entrada incorrecta\n");
+				exit(1);
+		}
+	}
+
 	while(1) {
 
-		FD_ZERO(&fps); /* Limpia el conjunto de descriptores */
-    	FD_SET(fp, &fps); /* Se agrega el descriptor del socket al 
-    					     conjunto de descriptores */ 
+		/* Limpia el conjunto de descriptores */
+		FD_ZERO(&fps); 
+
+		/* Se agrega el descriptor del socket al conjunto de descriptores */ 
+    	FD_SET(fp, &fps); 
 
 		sin_size = sizeof(struct sockaddr_in);
 
@@ -102,7 +155,8 @@ int main(int argc, char *argv[]) {
 			}
 			else {
 				
-				childpid = fork(); /* Creamos un nuevo proceso hijo */
+				/* Creamos un nuevo proceso hijo */
+				childpid = fork(); 
 				if (childpid == -1) {
 					perror(" No se pudo crear el proceso hijo \n");
 					exit(-1);
