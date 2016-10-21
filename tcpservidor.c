@@ -57,7 +57,7 @@ int main(int argc, char *argv[]) {
 	int childpid;  
 
 	/* Contador para el número de hijos */
-	int countchild; 
+	int countchild=0; 
 
 	/* Estado del proceso hijo */
 	int pidstatus; 
@@ -66,39 +66,19 @@ int main(int argc, char *argv[]) {
 	fd_set fps;    
 
 	/* Entero que representa el Puerto del servidor */
-	int puerto;
+	unsigned int puerto;
 
-	/* Bitacora deposito (archivo) */
+	/*Nombre de la bitacora de deposito*/
 	char ArchivoDeposito[64]; 
 
-	/* Bitacora retiro (archivo) */
+	/*Nombre de la bitacora de retiro*/
 	char ArchivoRetiro[64];   
 
-	/* Verificación para ver si el socket se creo correctamente */
-	if ((fp = socket(AF_INET, SOCK_STREAM, 0)) == -1) {  
-		perror(" Error en socket() \n");
-		exit(-1);
-    }
+	/* Bitacora deposito (archivo) */
+	FILE *depositos;
 
-    servidor.sin_family = AF_INET;         
-    servidor.sin_port = htons(PUERTO); 
-    servidor.sin_addr.s_addr = INADDR_ANY; 
-    /* INADDR_ANY coloca nuestra dirección IP automáticamente */
-
-    bzero(&(servidor.sin_zero), 8); 
-
-    /* Verificación para ver si el bind se está realizando correctamente */
-	if (bind(fp, (struct sockaddr*)&servidor,
-		sizeof(struct sockaddr)) == -1) {
-		perror(" Error en Bind() \n");
-		exit(-1);
-	}     
-
-	/* Verificación para ver si el listen se está realizando correctamente */
-	if (listen(fp, RESERVA) == -1) { 
-		perror(" Error en Listen()\n");
-		exit(-1);
-	}
+	/* Bitacora retiro (archivo) */
+	FILE *retiros;
 
 	if (strcmp("bsb_svr", argv[1]) != 0) {
 		printf(" Entrada incorrecta: Debe comenzar con bsb_svr\n");
@@ -119,14 +99,29 @@ int main(int argc, char *argv[]) {
 			
 			case 'l':
 				puerto = atoi(argv[i+1]);
+				printf("%d\n",puerto );
+				if (puerto > 1023 && puerto < 1){
+					printf("Error, el puerto debe ser un numero entre 1 y 1023, correspondiente a puertos bien conocidos \n");
+					exit(1);
+				}
 				break;
 			
 			case 'i':
 				strcpy(ArchivoDeposito, argv[i+1]);
+				depositos = fopen(ArchivoDeposito,"a");
+				if (depositos==NULL){
+					printf("Error, el nombre del archivo no debe contener caracteres especiales \n");
+					exit(1);
+				}
 				break;
 			
 			case 'o':
 				strcpy(ArchivoRetiro, argv[i+1]);
+				retiros = fopen(ArchivoRetiro,"a");
+				if (retiros==NULL){
+					printf("Error, el nombre del archivo no debe contener caracteres especiales \n");
+					exit(1);
+				}
 				break;
 
 			default:
@@ -135,6 +130,34 @@ int main(int argc, char *argv[]) {
 		}
 	}
 
+
+	/* Verificación para ver si el socket se creo correctamente */
+	if ((fp = socket(AF_INET, SOCK_STREAM, 0)) == -1) {  
+		perror(" Error en socket() \n");
+		exit(-1);
+    }
+
+
+    servidor.sin_family = AF_INET;         
+    servidor.sin_port = puerto; 
+    servidor.sin_addr.s_addr = INADDR_ANY; 
+    /* INADDR_ANY coloca nuestra dirección IP automáticamente */
+
+    bzero(&(servidor.sin_zero), 8); 
+
+    /* Verificación para ver si el bind se está realizando correctamente */
+	if (bind(fp, (struct sockaddr*)&servidor,
+		sizeof(struct sockaddr)) == -1) {
+		perror(" Error en Bind() \n");
+		exit(-1);
+	}     
+
+	/* Verificación para ver si el listen se está realizando correctamente */
+	if (listen(fp, RESERVA) == -1) { 
+		perror(" Error en Listen()\n");
+		exit(-1);
+	}
+	
 	while(1) {
 
 		/* Limpia el conjunto de descriptores */
@@ -161,7 +184,6 @@ int main(int argc, char *argv[]) {
 					perror(" No se pudo crear el proceso hijo \n");
 					exit(-1);
 				}
-
 				else if (childpid == 0) {
 					if (MAXCAJEROS > countchild){
 						printf("\n Se ha conectado %s por su puerto %d\n", inet_ntoa(cliente.sin_addr), cliente.sin_port);

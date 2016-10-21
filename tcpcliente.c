@@ -70,7 +70,8 @@ int main(int argc, char *argv[]) {
 				break;
 			
 			case 'i':
-				if (atoi(argv[i+1]) > 0 && atoi(argv[i+1]) < 1000)
+				/* Verificacion de codigo de usuario entre el rango de enteros 1000 hasta 9999 */
+				if (atoi(argv[i+1]) > 999 && atoi(argv[i+1]) < 10000)  
 					codigo_usuario = atoi(argv[i+1]);
 				else {
 					perror(" El codigo de usuario no se encuentra registrado\n");
@@ -91,7 +92,7 @@ int main(int argc, char *argv[]) {
     }
 
     servidor.sin_family = AF_INET;
-    servidor.sin_port = htons(puerto);
+    servidor.sin_port = puerto;
     servidor.sin_addr = *((struct in_addr *)ipcentral->h_addr); 
 
     bzero(&(servidor.sin_zero), 8);
@@ -99,7 +100,7 @@ int main(int argc, char *argv[]) {
     /* */
     if (connect(fp, (struct sockaddr *)&servidor,
 		sizeof(struct sockaddr)) == -1) { 
-		perror(" Error en connect() \n");
+		perror(" Error de connect() debido a IP incorrecto o puerto incorrecto \n");
 		exit(-1);
     }
 
