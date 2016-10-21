@@ -7,7 +7,26 @@
  *  		Meggie Sanchez      # Carnet 11-10939
  */
 
-#include "tcpservidor.h"
+ #include "tcpservidor.h"
+
+
+ int MaxCajeros(int socket, struct sockaddr_in direcc) {
+
+	int contador;
+    char buffer[TAMBUFFER];
+    
+    memset(buffer, 0, TAMBUFFER);
+    sprintf(buffer, " Este cajero no pertenece al servidor \n");
+
+    if ((contador = send(socket, buffer, strlen(buffer), 0)) == -1) {
+		perror(" No puedo enviar informacion \n");
+		exit(-1);
+	}
+    
+    close(socket);
+
+    return 0; 
+}
 
 int MaxClientes(int socket, struct sockaddr_in direcc) {
 
@@ -38,7 +57,6 @@ int CajeroCliente(int socket, struct sockaddr_in direcc) {
 	return(0);
 
 }
-
 
 int main(int argc, char *argv[]) {
 
@@ -80,6 +98,13 @@ int main(int argc, char *argv[]) {
 	/* Bitacora retiro (archivo) */
 	FILE *retiros;
 
+	/*Contador para la cantidad de cajeros registrados*/
+	char* listaCajeros[3];
+	listaCajeros[0] = NULL;
+	listaCajeros[1] = NULL;
+	listaCajeros[2] = NULL;
+
+
 	if (strcmp("bsb_svr", argv[1]) != 0) {
 		printf(" Entrada incorrecta: Debe comenzar con bsb_svr\n");
 		exit(1);
@@ -100,8 +125,8 @@ int main(int argc, char *argv[]) {
 			case 'l':
 				puerto = atoi(argv[i+1]);
 				printf("%d\n",puerto );
-				if (puerto > 1023 && puerto < 1){
-					printf("Error, el puerto debe ser un numero entre 1 y 1023, correspondiente a puertos bien conocidos \n");
+				if (puerto!=20104 && puerto!=20939){
+					printf("Error, el puerto debe ser 20104 o 20939 \n");
 					exit(1);
 				}
 				break;
@@ -153,7 +178,7 @@ int main(int argc, char *argv[]) {
 	}     
 
 	/* Verificación para ver si el listen se está realizando correctamente */
-	if (listen(fp, RESERVA) == -1) { 
+	if (listen(fp, MAXCLIENTES) == -1) { 
 		perror(" Error en Listen()\n");
 		exit(-1);
 	}
@@ -185,14 +210,39 @@ int main(int argc, char *argv[]) {
 					exit(-1);
 				}
 				else if (childpid == 0) {
-					if (MAXCAJEROS > countchild){
-						printf("\n Se ha conectado %s por su puerto %d\n", inet_ntoa(cliente.sin_addr), cliente.sin_port);
-						exit(CajeroCliente(fp2, cliente));
+					int listaLlena = 1;
+					int j;
+					for (j=0;j<3;j++){
+						if (listaCajeros[j]==NULL && listaLlena){
+							listaCajeros[j] = inet_ntoa(cliente.sin_addr);
+							listaLlena = 0;
+							printf("%s\n",listaCajeros[j]);
+							printf("\n Se ha conectado %s por su puerto %d\n", inet_ntoa(cliente.sin_addr), cliente.sin_port);
+							exit(CajeroCliente(fp2, cliente));
+						}
 					}
-					else
-						exit(MaxClientes(fp2, cliente));
-				}
+					if (listaLlena==1){
+						int pertenece = 0;
+						int z;
+						for (z = 0; z < 3; z += 1){
+							if (inet_ntoa(cliente.sin_addr) == listaCajeros[z])
+								pertenece = 1;
+						}
 
+						if (pertenece==1){//ip pertenece a listaCajeros
+							if(MAXCLIENTES>countchild){
+								printf("\n Se ha conectado %s por su puerto %d\n", inet_ntoa(cliente.sin_addr), cliente.sin_port);
+								exit(CajeroCliente(fp2, cliente));
+							}
+							else
+								exit(MaxClientes(fp2, cliente));
+						}
+						else{
+							exit(MaxCajeros(fp2, cliente));
+						}
+					}
+
+				}
 				else {
 					countchild ++;
 					close(fp2);

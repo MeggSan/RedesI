@@ -58,6 +58,10 @@ int main(int argc, char *argv[]) {
 			
 			case 'p':
 				puerto = atoi(argv[i+1]);
+				if (puerto!=20104 && puerto!=20939){
+					printf("Error, el puerto debe ser 20104 o 20939 \n");
+					exit(1);
+				}
 				break;
 			
 			case 'c':

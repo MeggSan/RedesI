@@ -24,12 +24,11 @@
 
 /* Constantes necesarias */
 
-#define PUERTO 3550 /* Puerto */
 #define TAMBUFFER 512 /* Tamaño del buffer */
-#define RESERVA 3 /* Conexiones permitidas */
-#define MAXCAJEROS 3 /* Conexiones permitidas */
+#define MAXCLIENTES 3 /* Conexiones permitidas */
 
 /* Declaración de funciones */
 
 int MaxClientes(int socket, struct sockaddr_in direcc);
 int CajeroCliente(int socket, struct sockaddr_in direcc);
+int MaxCajeros(int socket, struct sockaddr_in direcc);

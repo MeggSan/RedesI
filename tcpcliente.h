@@ -23,8 +23,6 @@
  
 /* Constantes necesarias */
 
-//#define PUERTO 3550         
-
 #define TAMAXBYTES 200   
 
 /* Declaración de funciones */
