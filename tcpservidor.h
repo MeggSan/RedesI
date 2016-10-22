@@ -21,6 +21,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <time.h>
 
 /* Constantes necesarias */
 
@@ -31,5 +32,7 @@
 /* Declaración de funciones */
 
 int MaxClientes(int socket, struct sockaddr_in direcc);
-int CajeroCliente(int socket, struct sockaddr_in direcc);
+int CajeroCliente(int socket, struct sockaddr_in direcc, time_t t, struct tm *tmp);
 int MaxCajeros(int socket, struct sockaddr_in direcc);
+char* HoraCajero(time_t t, struct tm *tmp);
+char* FechaCajero(time_t t, struct tm *tmp);

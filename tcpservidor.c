@@ -46,16 +46,43 @@ int MaxClientes(int socket, struct sockaddr_in direcc) {
     return 0; 
 }
 
-int CajeroCliente(int socket, struct sockaddr_in direcc) {
+char* HoraCajero(time_t t, struct tm *tmp) {
 
-	while(1){
+	t = time(NULL);
+	tmp = localtime(&t);
 
-		if(0>1)
-			printf("Es mentira\n");
+	char time[TAMBUFFER];
+
+	strftime(time, TAMBUFFER, "%H:%M:%S\n", tmp);
+
+	return time;
+}
+
+int CajeroCliente(int socket, struct sockaddr_in direcc, time_t t, struct tm *tmp) {
+
+	while(1) {
+
+		char* hora = HoraCajero(t, tmp);
+
+		printf("%s\n", hora);
+		send(socket, " Bienvenido a mi servidor", 25, 0);
+		send(socket, hora, TAMBUFFER, 0); 
 	}
 	close(socket);
 	return(0);
 
+}
+
+char* FechaCajero(time_t t, struct tm *tmp) {
+
+	t = time(NULL);
+	tmp = localtime(&t);
+
+	char time[TAMBUFFER];
+
+	strftime(time, TAMBUFFER, "%d/%m/%Y\n", tmp);
+
+	return time;
 }
 
 int main(int argc, char *argv[]) {
@@ -86,10 +113,10 @@ int main(int argc, char *argv[]) {
 	/* Entero que representa el Puerto del servidor */
 	int puerto;
 
-	/*Nombre de la bitacora de deposito*/
+	/* Nombre de la bitacora de deposito */
 	char ArchivoDeposito[64]; 
 
-	/*Nombre de la bitacora de retiro*/
+	/* Nombre de la bitacora de retiro */
 	char ArchivoRetiro[64];   
 
 	/* Bitacora deposito (archivo) */
@@ -98,12 +125,15 @@ int main(int argc, char *argv[]) {
 	/* Bitacora retiro (archivo) */
 	FILE *retiros;
 
-	/*Contador para la cantidad de cajeros registrados*/
+	/* Contador para la cantidad de cajeros registrados */
 	char* listaCajeros[3];
 	listaCajeros[0] = NULL;
 	listaCajeros[1] = NULL;
 	listaCajeros[2] = NULL;
 
+	/* Variables necesarias para la fecha y la hora del servidor */
+	time_t t;
+	struct tm *tmp;
 
 	if (strcmp("bsb_svr", argv[1]) != 0) {
 		printf(" Entrada incorrecta: Debe comenzar con bsb_svr\n");
@@ -155,13 +185,11 @@ int main(int argc, char *argv[]) {
 		}
 	}
 
-
 	/* Verificación para ver si el socket se creo correctamente */
 	if ((fp = socket(AF_INET, SOCK_STREAM, 0)) == -1) {  
 		perror(" Error en socket() \n");
 		exit(-1);
     }
-
 
     servidor.sin_family = AF_INET;         
     servidor.sin_port = puerto; 
@@ -201,6 +229,7 @@ int main(int argc, char *argv[]) {
 				perror(" Error en accept() \n");
 				exit(-1);
 			}
+
 			else {
 				
 				/* Creamos un nuevo proceso hijo */
@@ -217,7 +246,7 @@ int main(int argc, char *argv[]) {
 							listaLlena = 0;
 							printf("%s %d\n",listaCajeros[j],j);
 							printf("\n Se ha conectado %s por su puerto %d\n", inet_ntoa(cliente.sin_addr), cliente.sin_port);
-							exit(CajeroCliente(fp2, cliente));
+							exit(CajeroCliente(fp2, cliente, t, tmp));
 						}
 					}
 					if (listaLlena==1){
@@ -231,7 +260,7 @@ int main(int argc, char *argv[]) {
 						if (pertenece==1){//ip pertenece a listaCajeros
 							if(MAXCLIENTES>countchild){
 								printf("\n Se ha conectado %s por su puerto %d\n", inet_ntoa(cliente.sin_addr), cliente.sin_port);
-								exit(CajeroCliente(fp2, cliente));
+								exit(CajeroCliente(fp2, cliente, t, tmp));
 							}
 							else
 								printf("ESTOY ENTRANDO AQUI\n");
@@ -243,6 +272,7 @@ int main(int argc, char *argv[]) {
 					}
 
 				}
+
 				else {
 					countchild ++;
 					int x;
@@ -254,6 +284,9 @@ int main(int argc, char *argv[]) {
 					close(fp2); 
 				}
 			}
+
+
+			
 			/* NO SABEMOS COMO HACER PARA SABER CUANDO SE DESCONECTA 
 			int desconectado;
 			char buf[1024] = {0};
@@ -276,7 +309,6 @@ int main(int argc, char *argv[]) {
 				countchild --; 
 		}
 
-		send(fp2, " Bienvenido a mi servidor.\n", 25, 0); 
 	}
 
 	close(fp2);
