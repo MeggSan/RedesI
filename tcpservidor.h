@@ -26,6 +26,7 @@
 
 #define TAMBUFFER 512 /* Tamaño del buffer */
 #define MAXCLIENTES 3 /* Conexiones permitidas */
+#define TAMAXBYTES 200   
 
 /* Declaración de funciones */
 

@@ -84,7 +84,7 @@ int main(int argc, char *argv[]) {
 	fd_set fps;    
 
 	/* Entero que representa el Puerto del servidor */
-	unsigned int puerto;
+	int puerto;
 
 	/*Nombre de la bitacora de deposito*/
 	char ArchivoDeposito[64]; 
@@ -213,10 +213,9 @@ int main(int argc, char *argv[]) {
 					int listaLlena = 1;
 					int j;
 					for (j=0;j<3;j++){
-						if (listaCajeros[j]==NULL && listaLlena){
-							listaCajeros[j] = inet_ntoa(cliente.sin_addr);
+						if (listaCajeros[j]==NULL && listaLlena==1){
 							listaLlena = 0;
-							printf("%s\n",listaCajeros[j]);
+							printf("%s %d\n",listaCajeros[j],j);
 							printf("\n Se ha conectado %s por su puerto %d\n", inet_ntoa(cliente.sin_addr), cliente.sin_port);
 							exit(CajeroCliente(fp2, cliente));
 						}
@@ -235,25 +234,46 @@ int main(int argc, char *argv[]) {
 								exit(CajeroCliente(fp2, cliente));
 							}
 							else
+								printf("ESTOY ENTRANDO AQUI\n");
 								exit(MaxClientes(fp2, cliente));
 						}
 						else{
-							exit(MaxCajeros(fp2, cliente));
+							exit(MaxCajeros(fp2, cliente)); 
 						}
 					}
 
 				}
 				else {
 					countchild ++;
-					close(fp2);
+					int x;
+					for (x=0;x<3;x++){
+						if (listaCajeros[x]==NULL){
+							listaCajeros[x] = inet_ntoa(cliente.sin_addr);
+						}
+					}
+					close(fp2); 
 				}
 			}
+			/* NO SABEMOS COMO HACER PARA SABER CUANDO SE DESCONECTA 
+			int desconectado;
+			char buf[1024] = {0};
+			if ((desconectado = recv(fp, buf, TAMAXBYTES, 0))==0){
+				printf("Primer countchild %d\n",countchild );
+				countchild --;
+				printf("Segundo countchild %d\n",countchild );
+			}
+
+			childpid = waitpid(0, &pidstatus, WNOHANG);
+			printf("%d\n",countchild );
+			*/
+		
 		}
-
-		childpid = waitpid(0, &pidstatus, WNOHANG);
-
 		if (childpid > 0) {
-			countchild --;
+			printf("HOLAA\n");
+			if (countchild>3) 
+				countchild = 2;
+			else
+				countchild --; 
 		}
 
 		send(fp2, " Bienvenido a mi servidor.\n", 25, 0); 
