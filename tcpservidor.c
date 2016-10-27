@@ -9,7 +9,10 @@
 
  #include "tcpservidor.h"
 
-
+/* Función: MaxCajeros
+ * Descripción: 
+ * Parámetros:
+ */
  int MaxCajeros(int socket, struct sockaddr_in direcc) {
 
 	int contador;
@@ -28,6 +31,10 @@
     return 0; 
 }
 
+/* Función: MaxClientes
+ * Descripción: 
+ * Parámetros:
+ */
 int MaxClientes(int socket, struct sockaddr_in direcc) {
 
 	int contador;
@@ -46,6 +53,10 @@ int MaxClientes(int socket, struct sockaddr_in direcc) {
     return 0; 
 }
 
+/* Función: HoraCajero
+ * Descripción: 
+ * Parámetros:
+ */
 char* HoraCajero(time_t t, struct tm *tmp) {
 
 	t = time(NULL);
@@ -58,21 +69,29 @@ char* HoraCajero(time_t t, struct tm *tmp) {
 	return time;
 }
 
+/* Función: CajeroCliente
+ * Descripción: 
+ * Parámetros:
+ */
 int CajeroCliente(int socket, struct sockaddr_in direcc, time_t t, struct tm *tmp) {
 
 	while(1) {
 
-		char* hora = HoraCajero(t, tmp);
-
-		printf("%s\n", hora);
+		printf("%s\n", HoraCajero(t, tmp));
 		send(socket, " Bienvenido a mi servidor", 25, 0);
-		send(socket, hora, TAMBUFFER, 0); 
+		send(socket, HoraCajero(t, tmp), TAMBUFFER, 0); 
 	}
 	close(socket);
 	return(0);
 
 }
 
+/* Función: FechaCajero
+ * Descripción: Función que devuelve la fecha para mostrarla en el cajero
+ * Parámetros:
+ *     - t:
+ *     - tmp:
+ */
 char* FechaCajero(time_t t, struct tm *tmp) {
 
 	t = time(NULL);
@@ -83,6 +102,27 @@ char* FechaCajero(time_t t, struct tm *tmp) {
 	strftime(time, TAMBUFFER, "%d/%m/%Y\n", tmp);
 
 	return time;
+}
+
+
+/* Función: EscrituraArchivo
+ * Descripción: Función que escribirá en un archivo donde se llevará el registro
+ * de todas las operaciones realizadas indicando fecha, hora, 
+ * código del usuario, el evento (Depósito/Retiro) y Total Disponible.
+ * Parámetros:
+ *    - archivo:
+ *    - t:
+ *    - tmp:
+ *    - TotalDisponible:
+ */
+void EscrituraArchivo(FILE *archivo, time_t t, struct tm *tmp, int TotalDisponible) {
+
+	fprintf(archivo, "%s %s %s %s %s %s %s %s %s %s %s %s %s %d %s", 
+					 " La fecha es:", FechaCajero(t, tmp), "\n",
+					 " La hora es:", HoraCajero(t, tmp), "\n",
+					 " Codigo de usuario:", "codigo bla", "\n",
+					 " Evento/Operacion realizada:", "operacion bla", "\n",
+					 " Total Disponible:", TotalDisponible, "\n");
 }
 
 int main(int argc, char *argv[]) {
@@ -102,7 +142,7 @@ int main(int argc, char *argv[]) {
 	int childpid;  
 
 	/* Contador para el número de hijos */
-	int countchild=0; 
+	int countchild = 0; 
 
 	/* Estado del proceso hijo */
 	int pidstatus; 
@@ -135,6 +175,9 @@ int main(int argc, char *argv[]) {
 	time_t t;
 	struct tm *tmp;
 
+	/* Variable Total Disponible del servidor */
+	int TotalDisponible = 80000;
+
 	if (strcmp("bsb_svr", argv[1]) != 0) {
 		printf(" Entrada incorrecta: Debe comenzar con bsb_svr\n");
 		exit(1);
@@ -154,9 +197,9 @@ int main(int argc, char *argv[]) {
 			
 			case 'l':
 				puerto = atoi(argv[i+1]);
-				printf("%d\n",puerto );
-				if (puerto!=20104 && puerto!=20939){
-					printf("Error, el puerto debe ser 20104 o 20939 \n");
+				printf("%d\n",puerto);
+				if (puerto != 20104 && puerto != 20939) {
+					printf(" Error, el puerto debe ser 20104 o 20939 \n");
 					exit(1);
 				}
 				break;
@@ -164,19 +207,25 @@ int main(int argc, char *argv[]) {
 			case 'i':
 				strcpy(ArchivoDeposito, argv[i+1]);
 				depositos = fopen(ArchivoDeposito,"a");
-				if (depositos==NULL){
-					printf("Error, el nombre del archivo no debe contener caracteres especiales \n");
+				if (depositos == NULL) {
+					printf(" Error, el nombre del archivo no debe contener caracteres especiales \n");
 					exit(1);
 				}
+				else
+					EscrituraArchivo(depositos, t, tmp, TotalDisponible);
+					fclose(depositos);
 				break;
 			
 			case 'o':
 				strcpy(ArchivoRetiro, argv[i+1]);
 				retiros = fopen(ArchivoRetiro,"a");
-				if (retiros==NULL){
-					printf("Error, el nombre del archivo no debe contener caracteres especiales \n");
+				if (retiros == NULL) {
+					printf(" Error, el nombre del archivo no debe contener caracteres especiales \n");
 					exit(1);
 				}
+				else
+					EscrituraArchivo(retiros, t, tmp, TotalDisponible);
+					fclose(retiros);
 				break;
 
 			default:
@@ -201,7 +250,7 @@ int main(int argc, char *argv[]) {
     /* Verificación para ver si el bind se está realizando correctamente */
 	if (bind(fp, (struct sockaddr*)&servidor,
 		sizeof(struct sockaddr)) == -1) {
-		perror(" Error en Bind() \n");
+		perror(" Error en Bind()\n");
 		exit(-1);
 	}     
 
@@ -234,50 +283,54 @@ int main(int argc, char *argv[]) {
 				
 				/* Creamos un nuevo proceso hijo */
 				childpid = fork(); 
+
 				if (childpid == -1) {
 					perror(" No se pudo crear el proceso hijo \n");
 					exit(-1);
 				}
+
 				else if (childpid == 0) {
 					int listaLlena = 1;
 					int j;
-					for (j=0;j<3;j++){
-						if (listaCajeros[j]==NULL && listaLlena==1){
+					for (j=0;j<3;j++) {
+						if (listaCajeros[j] == NULL && listaLlena == 1) {
 							listaLlena = 0;
 							printf("%s %d\n",listaCajeros[j],j);
-							printf("\n Se ha conectado %s por su puerto %d\n", inet_ntoa(cliente.sin_addr), cliente.sin_port);
+							printf("\n Se ha conectado %s por su puerto %d\n", inet_ntoa(cliente.sin_addr), cliente.sin_port); 
 							exit(CajeroCliente(fp2, cliente, t, tmp));
 						}
 					}
-					if (listaLlena==1){
+
+					if (listaLlena == 1) {
 						int pertenece = 0;
 						int z;
-						for (z = 0; z < 3; z += 1){
+						for (z = 0; z < 3; z += 1) {
 							if (inet_ntoa(cliente.sin_addr) == listaCajeros[z])
 								pertenece = 1;
 						}
 
-						if (pertenece==1){//ip pertenece a listaCajeros
-							if(MAXCLIENTES>countchild){
+						if (pertenece == 1) { //ip pertenece a listaCajeros
+							
+							if (MAXCLIENTES > countchild) {
 								printf("\n Se ha conectado %s por su puerto %d\n", inet_ntoa(cliente.sin_addr), cliente.sin_port);
 								exit(CajeroCliente(fp2, cliente, t, tmp));
 							}
-							else
+							else {
 								printf("ESTOY ENTRANDO AQUI\n");
 								exit(MaxClientes(fp2, cliente));
+							}
 						}
-						else{
+						else {
 							exit(MaxCajeros(fp2, cliente)); 
 						}
 					}
-
 				}
 
 				else {
 					countchild ++;
 					int x;
-					for (x=0;x<3;x++){
-						if (listaCajeros[x]==NULL){
+					for (x = 0; x < 3; x++) {
+						if (listaCajeros[x] == NULL) {
 							listaCajeros[x] = inet_ntoa(cliente.sin_addr);
 						}
 					}
@@ -286,7 +339,6 @@ int main(int argc, char *argv[]) {
 			}
 
 
-			
 			/* NO SABEMOS COMO HACER PARA SABER CUANDO SE DESCONECTA 
 			int desconectado;
 			char buf[1024] = {0};
@@ -301,9 +353,10 @@ int main(int argc, char *argv[]) {
 			*/
 		
 		}
+
 		if (childpid > 0) {
 			printf("HOLAA\n");
-			if (countchild>3) 
+			if (countchild > 3) 
 				countchild = 2;
 			else
 				countchild --; 

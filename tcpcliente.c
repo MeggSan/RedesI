@@ -58,14 +58,14 @@ int main(int argc, char *argv[]) {
 			
 			case 'p':
 				puerto = atoi(argv[i+1]);
-				if (puerto!=20104 && puerto!=20939){
+				if (puerto != 20104 && puerto != 20939) {
 					printf("Error, el puerto debe ser 20104 o 20939 \n");
 					exit(1);
 				}
 				break;
 			
 			case 'c':
-				if ((strcmp("d", argv[i+1])==0) || (strcmp("r", argv[i+1])==0))
+				if ((strcmp("d", argv[i+1]) == 0) || (strcmp("r", argv[i+1]) == 0))
 					operacion = argv[i+1];
 				else {
 					perror(" Error en la operacion a realizar \n");

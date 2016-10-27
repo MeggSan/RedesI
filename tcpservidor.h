@@ -36,3 +36,4 @@ int CajeroCliente(int socket, struct sockaddr_in direcc, time_t t, struct tm *tm
 int MaxCajeros(int socket, struct sockaddr_in direcc);
 char* HoraCajero(time_t t, struct tm *tmp);
 char* FechaCajero(time_t t, struct tm *tmp);
+void EscrituraArchivo(FILE *archivo, time_t t, struct tm *tmp, int TotalDisponible);
