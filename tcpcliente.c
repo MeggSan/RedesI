@@ -77,6 +77,7 @@ int main(int argc, char *argv[]) {
 				/* Verificacion de codigo de usuario entre el rango de enteros 1000 hasta 9999 */
 				if (atoi(argv[i+1]) > 999 && atoi(argv[i+1]) < 10000)  
 					codigo_usuario = atoi(argv[i+1]);
+
 				else {
 					perror(" El codigo de usuario no se encuentra registrado\n");
 					exit(-1);
@@ -107,7 +108,10 @@ int main(int argc, char *argv[]) {
 		perror(" Error de connect() debido a IP incorrecto o puerto incorrecto \n");
 		exit(-1);
     }
-
+    
+    /*Recibir y enviar mensajes al servidor*/
+   
+    //Recibe la bienvenida
     if ((numbytes = recv(fp, buffer, TAMAXBYTES, 0)) == -1) {  
 		perror(" error Error \n");
 		exit(-1);
@@ -116,6 +120,16 @@ int main(int argc, char *argv[]) {
     buffer[numbytes] = '\0';
 
     printf(" Mensaje del Servidor: %s\n", buffer); 
+
+    //Recibe la hora
+    if ((numbytes = recv(fp, buffer, TAMAXBYTES, 0)) == -1) {  
+		perror(" error Error \n");
+		exit(-1);
+    }	
+
+    buffer[numbytes] = '\0';
+
+    printf("La hora es: %s\n", buffer); 
 
     close(fp);
 }

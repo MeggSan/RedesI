@@ -57,33 +57,19 @@ int MaxClientes(int socket, struct sockaddr_in direcc) {
  * Descripción: 
  * Parámetros:
  */
-char* HoraCajero(time_t t, struct tm *tmp) {
+char* HoraCajero(time_t t, struct tm tmp) {
 
 	t = time(NULL);
-	tmp = localtime(&t);
+	tmp = *localtime(&t);
 
 	char time[TAMBUFFER];
 
-	strftime(time, TAMBUFFER, "%H:%M:%S\n", tmp);
+	int hour = tmp.tm_hour;
+	int min = tmp.tm_min;
+	
+	sprintf(time, "%d:%d",hour,min);
 
 	return time;
-}
-
-/* Función: CajeroCliente
- * Descripción: 
- * Parámetros:
- */
-int CajeroCliente(int socket, struct sockaddr_in direcc, time_t t, struct tm *tmp) {
-
-	while(1) {
-
-		printf("%s\n", HoraCajero(t, tmp));
-		send(socket, " Bienvenido a mi servidor", 25, 0);
-		send(socket, HoraCajero(t, tmp), TAMBUFFER, 0); 
-	}
-	close(socket);
-	return(0);
-
 }
 
 /* Función: FechaCajero
@@ -92,17 +78,40 @@ int CajeroCliente(int socket, struct sockaddr_in direcc, time_t t, struct tm *tm
  *     - t:
  *     - tmp:
  */
-char* FechaCajero(time_t t, struct tm *tmp) {
+char* FechaCajero(time_t d, struct tm dmp) {
 
-	t = time(NULL);
-	tmp = localtime(&t);
+	d = time(NULL);
+	dmp = *localtime(&d);
 
-	char time[TAMBUFFER];
+	char date[TAMBUFFER];
 
-	strftime(time, TAMBUFFER, "%d/%m/%Y\n", tmp);
+	int year = dmp.tm_year;
+	int month = dmp.tm_mon;
+	int day = dmp.tm_mday;
 
-	return time;
+	sprintf(date, "%d/%d/%d",day,month,year);
+
+
+	return date;
 }
+
+/* Función: CajeroCliente
+ * Descripción: 
+ * Parámetros:
+ */
+int CajeroCliente(int socket, struct sockaddr_in direcc, time_t t, struct tm tmp) {
+
+	while(1) {
+
+		printf("%s\n", HoraCajero(t, tmp));
+		send(socket, " Bienvenido a mi servidor", 25, 0);
+		send(socket, "hola:", 4, 0); 
+	}
+	close(socket);
+	return(0);
+
+}
+
 
 
 /* Función: EscrituraArchivo
@@ -115,10 +124,12 @@ char* FechaCajero(time_t t, struct tm *tmp) {
  *    - tmp:
  *    - TotalDisponible:
  */
-void EscrituraArchivo(FILE *archivo, time_t t, struct tm *tmp, int TotalDisponible) {
-
-	fprintf(archivo, "%s %s %s %s %s %s %s %s %s %s %s %s %s %d %s", 
-					 " La fecha es:", FechaCajero(t, tmp), "\n",
+void EscrituraArchivo(FILE *archivo, time_t t, struct tm tmp, int TotalDisponible) {
+	printf("%s\n", FechaCajero(t, tmp));
+	printf("%s\n", HoraCajero(t, tmp));
+	fprintf(archivo, "%s %s %s ", 
+					 " La fecha es:", FechaCajero(t, tmp), "\n");
+	fprintf(archivo, "%s %s %s %s %s %s %s %s %s %s %d %s", 
 					 " La hora es:", HoraCajero(t, tmp), "\n",
 					 " Codigo de usuario:", "codigo bla", "\n",
 					 " Evento/Operacion realizada:", "operacion bla", "\n",
@@ -173,7 +184,7 @@ int main(int argc, char *argv[]) {
 
 	/* Variables necesarias para la fecha y la hora del servidor */
 	time_t t;
-	struct tm *tmp;
+	struct tm tmp;
 
 	/* Variable Total Disponible del servidor */
 	int TotalDisponible = 80000;

@@ -32,8 +32,8 @@
 /* Declaración de funciones */
 
 int MaxClientes(int socket, struct sockaddr_in direcc);
-int CajeroCliente(int socket, struct sockaddr_in direcc, time_t t, struct tm *tmp);
+int CajeroCliente(int socket, struct sockaddr_in direcc, time_t t, struct tm tmp);
 int MaxCajeros(int socket, struct sockaddr_in direcc);
-char* HoraCajero(time_t t, struct tm *tmp);
-char* FechaCajero(time_t t, struct tm *tmp);
-void EscrituraArchivo(FILE *archivo, time_t t, struct tm *tmp, int TotalDisponible);
+char* HoraCajero(time_t t, struct tm tmp);
+char* FechaCajero(time_t t, struct tm tmp);
+void EscrituraArchivo(FILE *archivo, time_t t, struct tm tmp, int TotalDisponible);
