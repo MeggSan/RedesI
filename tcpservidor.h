@@ -34,5 +34,5 @@ int MaxCajeros(int socket, struct sockaddr_in direcc);
 int MaxClientes(int socket, struct sockaddr_in direcc);
 char* HoraCajero(time_t t, struct tm tmp);
 char* FechaCajero(time_t t, struct tm tmp);
-void EscrituraArchivo(FILE *archivo, char fecha[TAMBUFFER], char hora[TAMBUFFER], int codigo_usuario, char operacion, int TotalDisponible);
-int CajeroCliente(int fp, time_t t, struct tm tmp, FILE *retiros, FILE *depositos,int TotalDisponible);
+void EscrituraArchivo(FILE *archivo, char fecha[TAMBUFFER], char hora[TAMBUFFER], int codigo_usuario, int monto, int TotalDisponible, char NombreArchivo[64]);
+int CajeroCliente(int fp, time_t t, struct tm tmp, FILE *retiros, FILE *depositos,int TotalDisponible, char ArchivoDeposito[64], char ArchivoRetiro[64]);

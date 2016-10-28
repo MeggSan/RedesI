@@ -106,15 +106,18 @@ char* FechaCajero(time_t d, struct tm dmp) {
  *    - tmp:
  *    - TotalDisponible:
  */
-void EscrituraArchivo(FILE *archivo, char fecha[TAMBUFFER], char hora[TAMBUFFER], int codigo_usuario, char operacion, int TotalDisponible) {
+void EscrituraArchivo(FILE *archivo, char fecha[TAMBUFFER], char hora[TAMBUFFER], int codigo_usuario, int monto, int TotalDisponible, char NombreArchivo[64]) {
 	
+	archivo = fopen(NombreArchivo,"a");
 	fprintf(archivo, "%s %s %s ", 
 					 " Fecha:", fecha, "\n");
-	fprintf(archivo, "%s %s %s %s %d %s %s %s %s %s %d %s", 
+	fprintf(archivo, "%s %s %s %s %d %s %s %d %s %s %d %s", 
 					 " Hora:", hora, "\n",
 					 " Codigo de usuario:", codigo_usuario, "\n",
-					 " Evento/Operacion realizada:", operacion, "\n",
-					 " Total Disponible:", TotalDisponible, "\n");
+					 " Monto en la operacion:", monto, "\n",
+					 " Total Disponible:", TotalDisponible, "\n\n");
+
+	fclose(archivo);
 }
 
 
@@ -122,7 +125,7 @@ void EscrituraArchivo(FILE *archivo, char fecha[TAMBUFFER], char hora[TAMBUFFER]
  * Descripción: 
  * Parámetros:
  */
-int CajeroCliente(int fp, time_t t, struct tm tmp, FILE *retiros, FILE *depositos, int TotalDisponible) {
+int CajeroCliente(int fp, time_t t, struct tm tmp, FILE *retiros, FILE *depositos, int TotalDisponible, char ArchivoDeposito[64], char ArchivoRetiro[64]) {
 	
  	int monto; 
  	int codigo_usuario;
@@ -172,7 +175,7 @@ int CajeroCliente(int fp, time_t t, struct tm tmp, FILE *retiros, FILE *deposito
 				send(fp, hora, TAMBUFFER, 0);
 
 			  	TotalDisponible -= monto;
-			  	//EscrituraArchivo(retiros, fecha, hora, codigo_usuario, operacion, TotalDisponible);
+			  	EscrituraArchivo(retiros, fecha, hora, codigo_usuario, monto, TotalDisponible, ArchivoRetiro);
 			}
 		}
   	}
@@ -198,7 +201,7 @@ int CajeroCliente(int fp, time_t t, struct tm tmp, FILE *retiros, FILE *deposito
 		send(fp, hora, TAMBUFFER, 0);
 
 	  	TotalDisponible += monto;
-	  	//EscrituraArchivo(depositos, fecha, hora, codigo_usuario, operacion, TotalDisponible);
+	  	EscrituraArchivo(depositos, fecha, hora, codigo_usuario, monto, TotalDisponible, ArchivoDeposito);
   	}
 	close(fp);
 	return(TotalDisponible);
@@ -292,7 +295,7 @@ int main(int argc, char *argv[]) {
 					printf(" Error, el nombre del archivo no debe contener caracteres especiales \n");
 					exit(1);
 				}
-				
+				fclose(retiros);	
 				break;
 			
 			case 'i':
@@ -302,8 +305,8 @@ int main(int argc, char *argv[]) {
 					printf(" Error, el nombre del archivo no debe contener caracteres especiales \n");
 					exit(1);
 				}
+				fclose(depositos);
 				break;
-			
 
 			default:
 				printf(" Entrada incorrecta\n");
@@ -373,7 +376,7 @@ int main(int argc, char *argv[]) {
 							listaLlena = 0;
 							printf("\n Se ha conectado %s por su puerto %d\n", inet_ntoa(cliente.sin_addr), cliente.sin_port); 
 							printf("TOTAL DISP ANTES: %d\n",TotalDisponible );
-							TotalDisponible = CajeroCliente(fp2, t, tmp, retiros, depositos, TotalDisponible);
+							TotalDisponible = CajeroCliente(fp2, t, tmp, retiros, depositos, TotalDisponible, ArchivoDeposito, ArchivoRetiro);
 							printf("TOTAL DISP DESPUES: %d\n",TotalDisponible );
 	
 						}
@@ -392,7 +395,7 @@ int main(int argc, char *argv[]) {
 							if (MAXCLIENTES > countchild) {
 								printf("\n Se ha conectado %s por su puerto %d\n", inet_ntoa(cliente.sin_addr), cliente.sin_port);
 								printf(" 2 TOTAL DISP ANTES: %d\n",TotalDisponible );
-								TotalDisponible = CajeroCliente(fp2, t, tmp, retiros, depositos, TotalDisponible);
+								TotalDisponible = CajeroCliente(fp2, t, tmp, retiros, depositos, TotalDisponible, ArchivoDeposito, ArchivoRetiro);
 								printf("2 TOTAL DISP DESPUES: %d\n",TotalDisponible );
 								
 							}
@@ -442,8 +445,6 @@ int main(int argc, char *argv[]) {
 		}
 		close(fp2);
 	}
-	fclose(retiros);
-	fclose(depositos);
 	close(fp2);
 
 	return 0;	
