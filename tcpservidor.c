@@ -251,10 +251,10 @@ int main(int argc, char *argv[]) {
 	FILE *retiros;
 
 	/* Contador para la cantidad de cajeros registrados */
-	char* listaCajeros[3];
+	/*	char* listaCajeros[3];
 	listaCajeros[0] = NULL;
 	listaCajeros[1] = NULL;
-	listaCajeros[2] = NULL;
+	listaCajeros[2] = NULL;*/
 
 	/* Variables necesarias para la fecha y la hora del servidor */
 	time_t t;
@@ -369,54 +369,55 @@ int main(int argc, char *argv[]) {
 				}
 
 				else if (childpid == 0) {
-					int listaLlena = 1;
-					int j;
-					for (j=0;j<3;j++) {
+/*					int listaLlena = 1;
+					int j;*/
+/*					for (j=0;j<3;j++) {
 						if (listaCajeros[j] == NULL && listaLlena == 1) {
-							listaLlena = 0;
-							printf("\n Se ha conectado %s por su puerto %d\n", inet_ntoa(cliente.sin_addr), cliente.sin_port); 
+							listaLlena = 0;*/
+/*							printf("\n Se ha conectado %s por su puerto %d\n", inet_ntoa(cliente.sin_addr), cliente.sin_port); 
 							printf("TOTAL DISP ANTES: %d\n",TotalDisponible );
 							TotalDisponible = CajeroCliente(fp2, t, tmp, retiros, depositos, TotalDisponible, ArchivoDeposito, ArchivoRetiro);
 							printf("TOTAL DISP DESPUES: %d\n",TotalDisponible );
 	
 						}
-					}
+					}*/
 
-					if (listaLlena == 1) {
+/*					if (listaLlena == 1) {
 						int pertenece = 0;
 						int z;
 						for (z = 0; z < 3; z += 1) {
 							if (inet_ntoa(cliente.sin_addr) == listaCajeros[z])
 								pertenece = 1;
-						}
+						}*/
 
-						if (pertenece == 1) { //ip pertenece a listaCajeros
+/*						if (pertenece == 1) { //ip pertenece a listaCajeros*/
 							
-							if (MAXCLIENTES > countchild) {
-								printf("\n Se ha conectado %s por su puerto %d\n", inet_ntoa(cliente.sin_addr), cliente.sin_port);
-								printf(" 2 TOTAL DISP ANTES: %d\n",TotalDisponible );
-								TotalDisponible = CajeroCliente(fp2, t, tmp, retiros, depositos, TotalDisponible, ArchivoDeposito, ArchivoRetiro);
-								printf("2 TOTAL DISP DESPUES: %d\n",TotalDisponible );
-								
-							}
-							else {
-								exit(MaxClientes(fp2, cliente));
-							}
-						}
-						else {
-							exit(MaxCajeros(fp2, cliente)); 
-						}
+					if (MAXCLIENTES > countchild) {
+						printf("\n Se ha conectado %s por su puerto %d\n", inet_ntoa(cliente.sin_addr), cliente.sin_port);
+						printf(" 2 TOTAL DISP ANTES: %d\n",TotalDisponible );
+						TotalDisponible = CajeroCliente(fp2, t, tmp, retiros, depositos, TotalDisponible, ArchivoDeposito, ArchivoRetiro);
+						printf("2 TOTAL DISP DESPUES: %d\n",TotalDisponible );
+						
+					}
+					else {
+						exit(MaxClientes(fp2, cliente));
 					}
 				}
+				
+/*						else {
+							exit(MaxCajeros(fp2, cliente)); 
+						}*/
+/*					}
+				}*/
 
 				else {
 					countchild ++;
-					int x;
+	/*				int x;
 					for (x = 0; x < 3; x++) {
 						if (listaCajeros[x] == NULL) {
 							listaCajeros[x] = inet_ntoa(cliente.sin_addr);
 						}
-					}
+					}*/
 					close(fp2); 
 				}
 			}
@@ -437,14 +438,17 @@ int main(int argc, char *argv[]) {
 		
 		}
 
+		childpid = waitpid(0, &pidstatus, WNOHANG);
+
 		if (childpid > 0) {
-			if (countchild > 3) 
+/*			if (countchild > 3) 
 				countchild = 2;
-			else
-				countchild --; 
+			else*/
+			countchild --; 
 		}
-		close(fp2);
+
 	}
+
 	close(fp2);
 
 	return 0;	
