@@ -27,13 +27,12 @@
 
 #define TAMBUFFER 512 /* Tamaño del buffer */
 #define MAXCLIENTES 3 /* Conexiones permitidas */
-#define TAMAXBYTES 200   
 
 /* Declaración de funciones */
 
-int MaxClientes(int socket, struct sockaddr_in direcc);
-int CajeroCliente(int socket, struct sockaddr_in direcc, time_t t, struct tm tmp);
 int MaxCajeros(int socket, struct sockaddr_in direcc);
+int MaxClientes(int socket, struct sockaddr_in direcc);
 char* HoraCajero(time_t t, struct tm tmp);
 char* FechaCajero(time_t t, struct tm tmp);
-void EscrituraArchivo(FILE *archivo, time_t t, struct tm tmp, int TotalDisponible);
+void EscrituraArchivo(FILE *archivo, char fecha[TAMBUFFER], char hora[TAMBUFFER], int codigo_usuario, char operacion, int TotalDisponible);
+int CajeroCliente(int fp, time_t t, struct tm tmp, FILE *retiros, FILE *depositos,int TotalDisponible);

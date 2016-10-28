@@ -95,24 +95,6 @@ char* FechaCajero(time_t d, struct tm dmp) {
 	return date;
 }
 
-/* Función: CajeroCliente
- * Descripción: 
- * Parámetros:
- */
-int CajeroCliente(int socket, struct sockaddr_in direcc, time_t t, struct tm tmp) {
-
-	while(1) {
-
-		printf("%s\n", HoraCajero(t, tmp));
-		send(socket, " Bienvenido a mi servidor", 25, 0);
-		send(socket, "hola:", 4, 0); 
-	}
-	close(socket);
-	return(0);
-
-}
-
-
 
 /* Función: EscrituraArchivo
  * Descripción: Función que escribirá en un archivo donde se llevará el registro
@@ -124,17 +106,106 @@ int CajeroCliente(int socket, struct sockaddr_in direcc, time_t t, struct tm tmp
  *    - tmp:
  *    - TotalDisponible:
  */
-void EscrituraArchivo(FILE *archivo, time_t t, struct tm tmp, int TotalDisponible) {
-	printf("%s\n", FechaCajero(t, tmp));
-	printf("%s\n", HoraCajero(t, tmp));
+void EscrituraArchivo(FILE *archivo, char fecha[TAMBUFFER], char hora[TAMBUFFER], int codigo_usuario, char operacion, int TotalDisponible) {
+	
 	fprintf(archivo, "%s %s %s ", 
-					 " La fecha es:", FechaCajero(t, tmp), "\n");
-	fprintf(archivo, "%s %s %s %s %s %s %s %s %s %s %d %s", 
-					 " La hora es:", HoraCajero(t, tmp), "\n",
-					 " Codigo de usuario:", "codigo bla", "\n",
-					 " Evento/Operacion realizada:", "operacion bla", "\n",
+					 " Fecha:", fecha, "\n");
+	fprintf(archivo, "%s %s %s %s %d %s %s %s %s %s %d %s", 
+					 " Hora:", hora, "\n",
+					 " Codigo de usuario:", codigo_usuario, "\n",
+					 " Evento/Operacion realizada:", operacion, "\n",
 					 " Total Disponible:", TotalDisponible, "\n");
 }
+
+
+/* Función: CajeroCliente
+ * Descripción: 
+ * Parámetros:
+ */
+int CajeroCliente(int fp, time_t t, struct tm tmp, FILE *retiros, FILE *depositos, int TotalDisponible) {
+	
+ 	int monto; 
+ 	int codigo_usuario;
+ 	char* operacion;
+ 	char fecha[TAMBUFFER];
+ 	char hora[TAMBUFFER];
+
+ 	int numbytes;
+	char buffer[TAMBUFFER];
+	send(fp, " Bienvenido a mi servidor", 25, 0);
+	
+	//Se recibe el tipo de operacion (deposito o retiro)
+	if ((numbytes = recv(fp, buffer, TAMBUFFER, 0)) == -1) {  
+		perror(" Error en la funcion recv() \n");
+		exit(-1);
+  	}
+  	buffer[numbytes] = '\0';
+  	operacion = buffer;
+
+  	if (strcmp("r", operacion) == 0){
+  		
+  		//Se recibe el monto de la operacion
+		if ((numbytes = recv(fp, buffer, TAMBUFFER, 0)) == -1) {  
+			perror(" Error en la funcion recv() \n");
+			exit(-1);
+	  	}
+	  	buffer[numbytes] = '\0';
+	  	monto = atoi(buffer);
+	  	if (monto<=3000){
+	  		char totalString[TAMBUFFER];
+	  		sprintf(totalString, "%d", TotalDisponible);
+	  		// Se envia el total disponible
+	  		send(fp,totalString,TAMBUFFER,0);
+
+			if (TotalDisponible>5000){
+			  	//Se recibe el codigo del usuario
+				if ((numbytes = recv(fp, buffer, TAMBUFFER, 0)) == -1) {  
+					perror(" Error en la funcion recv() \n");
+					exit(-1);
+			  	}
+			  	buffer[numbytes] = '\0';
+			  	codigo_usuario = atoi(buffer);
+			  	
+			  	strcpy(fecha, FechaCajero(t, tmp));
+			  	strcpy(hora, HoraCajero(t, tmp));
+			  	send(fp, fecha, TAMBUFFER, 0);
+				send(fp, hora, TAMBUFFER, 0);
+
+			  	TotalDisponible -= monto;
+			  	//EscrituraArchivo(retiros, fecha, hora, codigo_usuario, operacion, TotalDisponible);
+			}
+		}
+  	}
+  	else if (strcmp("d", operacion) == 0){
+  		//Se recibe el monto de la operacion
+		if ((numbytes = recv(fp, buffer, TAMBUFFER, 0)) == -1) {  
+			perror(" Error en la funcion recv() \n");
+			exit(-1);
+	  	}
+	  	buffer[numbytes] = '\0';
+	  	monto = atoi(buffer);
+	  	//Se recibe el codigo del usuario
+		if ((numbytes = recv(fp, buffer, TAMBUFFER, 0)) == -1) {  
+			perror(" Error en la funcion recv() \n");
+			exit(-1);
+	  	}
+	  	buffer[numbytes] = '\0';
+	  	codigo_usuario = atoi(buffer);
+	  	
+	  	strcpy(fecha, FechaCajero(t, tmp));
+	  	strcpy(hora, HoraCajero(t, tmp));
+	  	send(fp, fecha, TAMBUFFER, 0);
+		send(fp, hora, TAMBUFFER, 0);
+
+	  	TotalDisponible += monto;
+	  	//EscrituraArchivo(depositos, fecha, hora, codigo_usuario, operacion, TotalDisponible);
+  	}
+	close(fp);
+	return(TotalDisponible);
+
+}
+
+
 
 int main(int argc, char *argv[]) {
 
@@ -208,23 +279,10 @@ int main(int argc, char *argv[]) {
 			
 			case 'l':
 				puerto = atoi(argv[i+1]);
-				printf("%d\n",puerto);
 				if (puerto != 20104 && puerto != 20939) {
 					printf(" Error, el puerto debe ser 20104 o 20939 \n");
 					exit(1);
 				}
-				break;
-			
-			case 'i':
-				strcpy(ArchivoDeposito, argv[i+1]);
-				depositos = fopen(ArchivoDeposito,"a");
-				if (depositos == NULL) {
-					printf(" Error, el nombre del archivo no debe contener caracteres especiales \n");
-					exit(1);
-				}
-				else
-					EscrituraArchivo(depositos, t, tmp, TotalDisponible);
-					fclose(depositos);
 				break;
 			
 			case 'o':
@@ -234,10 +292,18 @@ int main(int argc, char *argv[]) {
 					printf(" Error, el nombre del archivo no debe contener caracteres especiales \n");
 					exit(1);
 				}
-				else
-					EscrituraArchivo(retiros, t, tmp, TotalDisponible);
-					fclose(retiros);
+				
 				break;
+			
+			case 'i':
+				strcpy(ArchivoDeposito, argv[i+1]);
+				depositos = fopen(ArchivoDeposito,"a");
+				if (depositos == NULL) {
+					printf(" Error, el nombre del archivo no debe contener caracteres especiales \n");
+					exit(1);
+				}
+				break;
+			
 
 			default:
 				printf(" Entrada incorrecta\n");
@@ -272,7 +338,6 @@ int main(int argc, char *argv[]) {
 	}
 	
 	while(1) {
-
 		/* Limpia el conjunto de descriptores */
 		FD_ZERO(&fps); 
 
@@ -306,9 +371,11 @@ int main(int argc, char *argv[]) {
 					for (j=0;j<3;j++) {
 						if (listaCajeros[j] == NULL && listaLlena == 1) {
 							listaLlena = 0;
-							printf("%s %d\n",listaCajeros[j],j);
 							printf("\n Se ha conectado %s por su puerto %d\n", inet_ntoa(cliente.sin_addr), cliente.sin_port); 
-							exit(CajeroCliente(fp2, cliente, t, tmp));
+							printf("TOTAL DISP ANTES: %d\n",TotalDisponible );
+							TotalDisponible = CajeroCliente(fp2, t, tmp, retiros, depositos, TotalDisponible);
+							printf("TOTAL DISP DESPUES: %d\n",TotalDisponible );
+	
 						}
 					}
 
@@ -324,10 +391,12 @@ int main(int argc, char *argv[]) {
 							
 							if (MAXCLIENTES > countchild) {
 								printf("\n Se ha conectado %s por su puerto %d\n", inet_ntoa(cliente.sin_addr), cliente.sin_port);
-								exit(CajeroCliente(fp2, cliente, t, tmp));
+								printf(" 2 TOTAL DISP ANTES: %d\n",TotalDisponible );
+								TotalDisponible = CajeroCliente(fp2, t, tmp, retiros, depositos, TotalDisponible);
+								printf("2 TOTAL DISP DESPUES: %d\n",TotalDisponible );
+								
 							}
 							else {
-								printf("ESTOY ENTRANDO AQUI\n");
 								exit(MaxClientes(fp2, cliente));
 							}
 						}
@@ -366,15 +435,15 @@ int main(int argc, char *argv[]) {
 		}
 
 		if (childpid > 0) {
-			printf("HOLAA\n");
 			if (countchild > 3) 
 				countchild = 2;
 			else
 				countchild --; 
 		}
-
+		close(fp2);
 	}
-
+	fclose(retiros);
+	fclose(depositos);
 	close(fp2);
 
 	return 0;	

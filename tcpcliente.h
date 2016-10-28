@@ -23,6 +23,6 @@
  
 /* Constantes necesarias */
 
-#define TAMAXBYTES 200   
+#define TAMBUFFER 512   
 
 /* Declaración de funciones */
