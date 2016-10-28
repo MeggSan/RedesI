@@ -162,14 +162,14 @@ int main(int argc, char *argv[]) {
 	  				send(fp, codigoString,TAMBUFFER,0);
 	  				printf("El retiro se ha realizado satisfactoriamente.\n");
 	  				// Se recibe la fecha 
-		    		if ((numbytes = recv(fp, buffer, TAMBUFFER, 0)) == -1) {  
+		    		if ((numbytes = recv(fp, buffer, TAMBUFFER, 0)) == -1) { 
 						perror(" Error en la funcion recv() \n");
 						exit(-1);
 		  			}
 		  			buffer[numbytes] = '\0';
 	  				printf("Fecha: %s\n",buffer);
 	  				// Se recibe la hora 
-		    		if ((numbytes = recv(fp, buffer, TAMBUFFER, 0)) == -1) {  
+		    		if ((numbytes = recv(fp, buffer, TAMBUFFER, 0)) == -1) {
 						perror(" Error en la funcion recv() \n");
 						exit(-1);
 		  			}
@@ -192,14 +192,14 @@ int main(int argc, char *argv[]) {
 			send(fp, codigoString,TAMBUFFER,0);
 			printf("El deposito se ha realizado satisfactoriamente.\n");
 			// Se recibe la fecha 
-			if ((numbytes = recv(fp, buffer, TAMBUFFER, 0)) == -1) {  
+			if ((numbytes = recv(fp, buffer, TAMBUFFER, 0)) == -1) {
 				perror(" Error en la funcion recv() \n");
 				exit(-1);
 			}
 			buffer[numbytes] = '\0';
 			printf("Fecha: %s\n",buffer);
 			// Se recibe la hora 
-			if ((numbytes = recv(fp, buffer, TAMBUFFER, 0)) == -1) {  
+			if ((numbytes = recv(fp, buffer, TAMBUFFER, 0)) == -1) {
 				perror(" Error en la funcion recv() \n");
 				exit(-1);
 			}

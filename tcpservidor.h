@@ -22,6 +22,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <time.h>
+#include <pthread.h>
 
 /* Constantes necesarias */
 
@@ -35,4 +36,4 @@ int MaxClientes(int socket, struct sockaddr_in direcc);
 char* HoraCajero(time_t t, struct tm tmp);
 char* FechaCajero(time_t t, struct tm tmp);
 void EscrituraArchivo(FILE *archivo, char fecha[TAMBUFFER], char hora[TAMBUFFER], int codigo_usuario, int monto, int TotalDisponible, char NombreArchivo[64]);
-int CajeroCliente(int fp, time_t t, struct tm tmp, FILE *retiros, FILE *depositos,int TotalDisponible, char ArchivoDeposito[64], char ArchivoRetiro[64]);
+void *CajeroCliente(void *arg);

@@ -125,7 +125,7 @@ void EscrituraArchivo(FILE *archivo, char fecha[TAMBUFFER], char hora[TAMBUFFER]
  * Descripción: 
  * Parámetros:
  */
-int CajeroCliente(int fp, time_t t, struct tm tmp, FILE *retiros, FILE *depositos, int TotalDisponible, char ArchivoDeposito[64], char ArchivoRetiro[64]) {
+void *CajeroCliente(void *arg) {
 	
  	int monto; 
  	int codigo_usuario;
@@ -135,11 +135,11 @@ int CajeroCliente(int fp, time_t t, struct tm tmp, FILE *retiros, FILE *deposito
 
  	int numbytes;
 	char buffer[TAMBUFFER];
-	send(fp, " Bienvenido a mi servidor", 25, 0);
+	send(fp2, " Bienvenido a mi servidor", 25, 0);
 	
 	//Se recibe el tipo de operacion (deposito o retiro)
-	if ((numbytes = recv(fp, buffer, TAMBUFFER, 0)) == -1) {  
-		perror(" Error en la funcion recv() \n");
+	if ((numbytes = recv(fp2, buffer, TAMBUFFER, 0)) == -1) {  
+		perror(" 1 Error en la funcion recv() \n");
 		exit(-1);
   	}
   	buffer[numbytes] = '\0';
@@ -148,8 +148,8 @@ int CajeroCliente(int fp, time_t t, struct tm tmp, FILE *retiros, FILE *deposito
   	if (strcmp("r", operacion) == 0){
   		
   		//Se recibe el monto de la operacion
-		if ((numbytes = recv(fp, buffer, TAMBUFFER, 0)) == -1) {  
-			perror(" Error en la funcion recv() \n");
+		if ((numbytes = recv(fp, buffer, TAMBUFFER, 0)) == -1) { 
+			perror(" 2 Error en la funcion recv() \n");
 			exit(-1);
 	  	}
 	  	buffer[numbytes] = '\0';
@@ -162,8 +162,8 @@ int CajeroCliente(int fp, time_t t, struct tm tmp, FILE *retiros, FILE *deposito
 
 			if (TotalDisponible>5000){
 			  	//Se recibe el codigo del usuario
-				if ((numbytes = recv(fp, buffer, TAMBUFFER, 0)) == -1) {  
-					perror(" Error en la funcion recv() \n");
+				if ((numbytes = recv(fp, buffer, TAMBUFFER, 0)) == -1) {
+					perror(" 3 Error en la funcion recv() \n");
 					exit(-1);
 			  	}
 			  	buffer[numbytes] = '\0';
@@ -181,15 +181,15 @@ int CajeroCliente(int fp, time_t t, struct tm tmp, FILE *retiros, FILE *deposito
   	}
   	else if (strcmp("d", operacion) == 0){
   		//Se recibe el monto de la operacion
-		if ((numbytes = recv(fp, buffer, TAMBUFFER, 0)) == -1) {  
-			perror(" Error en la funcion recv() \n");
+		if ((numbytes = recv(fp, buffer, TAMBUFFER, 0)) == -1) { 
+			perror(" 4 Error en la funcion recv() \n");
 			exit(-1);
 	  	}
 	  	buffer[numbytes] = '\0';
 	  	monto = atoi(buffer);
 	  	//Se recibe el codigo del usuario
 		if ((numbytes = recv(fp, buffer, TAMBUFFER, 0)) == -1) {  
-			perror(" Error en la funcion recv() \n");
+			perror(" 5 Error en la funcion recv() \n");
 			exit(-1);
 	  	}
 	  	buffer[numbytes] = '\0';
@@ -204,13 +204,17 @@ int CajeroCliente(int fp, time_t t, struct tm tmp, FILE *retiros, FILE *deposito
 	  	EscrituraArchivo(depositos, fecha, hora, codigo_usuario, monto, TotalDisponible, ArchivoDeposito);
   	}
 	close(fp);
-	return(TotalDisponible);
-
 }
 
 
 
 int main(int argc, char *argv[]) {
+
+	/************************* HILOS *************************/
+
+	pthread_t h;
+
+	int valor_hilo;
 
 	/* Ficheros descriptores */
 	int fp, fp2;
@@ -339,7 +343,9 @@ int main(int argc, char *argv[]) {
 		perror(" Error en Listen()\n");
 		exit(-1);
 	}
-	
+
+	/************************* HILOS *************************/
+
 	while(1) {
 		/* Limpia el conjunto de descriptores */
 		FD_ZERO(&fps); 
@@ -359,94 +365,26 @@ int main(int argc, char *argv[]) {
 			}
 
 			else {
-				
-				/* Creamos un nuevo proceso hijo */
-				childpid = fork(); 
-
-				if (childpid == -1) {
-					perror(" No se pudo crear el proceso hijo \n");
-					exit(-1);
-				}
-
-				else if (childpid == 0) {
-/*					int listaLlena = 1;
-					int j;*/
-/*					for (j=0;j<3;j++) {
-						if (listaCajeros[j] == NULL && listaLlena == 1) {
-							listaLlena = 0;*/
-/*							printf("\n Se ha conectado %s por su puerto %d\n", inet_ntoa(cliente.sin_addr), cliente.sin_port); 
-							printf("TOTAL DISP ANTES: %d\n",TotalDisponible );
-							TotalDisponible = CajeroCliente(fp2, t, tmp, retiros, depositos, TotalDisponible, ArchivoDeposito, ArchivoRetiro);
-							printf("TOTAL DISP DESPUES: %d\n",TotalDisponible );
-	
-						}
-					}*/
-
-/*					if (listaLlena == 1) {
-						int pertenece = 0;
-						int z;
-						for (z = 0; z < 3; z += 1) {
-							if (inet_ntoa(cliente.sin_addr) == listaCajeros[z])
-								pertenece = 1;
-						}*/
-
-/*						if (pertenece == 1) { //ip pertenece a listaCajeros*/
-							
-					if (MAXCLIENTES > countchild) {
-						printf("\n Se ha conectado %s por su puerto %d\n", inet_ntoa(cliente.sin_addr), cliente.sin_port);
-						printf(" 2 TOTAL DISP ANTES: %d\n",TotalDisponible );
-						TotalDisponible = CajeroCliente(fp2, t, tmp, retiros, depositos, TotalDisponible, ArchivoDeposito, ArchivoRetiro);
-						printf("2 TOTAL DISP DESPUES: %d\n",TotalDisponible );
-						
-					}
-					else {
-						exit(MaxClientes(fp2, cliente));
-					}
-				}
-				
-/*						else {
-							exit(MaxCajeros(fp2, cliente)); 
-						}*/
-/*					}
-				}*/
-
-				else {
+				if (MAXCLIENTES > countchild) {
+					printf("\n Se ha conectado %s por su puerto %d\n", inet_ntoa(cliente.sin_addr), cliente.sin_port);
+					printf(" 2 TOTAL DISP ANTES: %d\n",TotalDisponible );
 					countchild ++;
-	/*				int x;
-					for (x = 0; x < 3; x++) {
-						if (listaCajeros[x] == NULL) {
-							listaCajeros[x] = inet_ntoa(cliente.sin_addr);
-						}
-					}*/
-					close(fp2); 
+					valor_hilo = pthread_create(&h, NULL, CajeroCliente, NULL);
+					if (valor_hilo != 0) {
+						perror("NO SE PUDO CREAR HILO: hilo_cliente3");
+						exit(0);
+					}
+					printf("2 TOTAL DISP DESPUES: %d\n",TotalDisponible );
+					pthread_join(h, NULL);
+					countchild --;
 				}
+				else {
+					exit(MaxClientes(fp2, cliente));
+				}
+				
+				close(fp2); 
 			}
-
-
-			/* NO SABEMOS COMO HACER PARA SABER CUANDO SE DESCONECTA 
-			int desconectado;
-			char buf[1024] = {0};
-			if ((desconectado = recv(fp, buf, TAMAXBYTES, 0))==0){
-				printf("Primer countchild %d\n",countchild );
-				countchild --;
-				printf("Segundo countchild %d\n",countchild );
-			}
-
-			childpid = waitpid(0, &pidstatus, WNOHANG);
-			printf("%d\n",countchild );
-			*/
-		
 		}
-
-		childpid = waitpid(0, &pidstatus, WNOHANG);
-
-		if (childpid > 0) {
-/*			if (countchild > 3) 
-				countchild = 2;
-			else*/
-			countchild --; 
-		}
-
 	}
 
 	close(fp2);

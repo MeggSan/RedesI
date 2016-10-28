@@ -13,7 +13,7 @@ CFLAGS = -g
 all : tcpservidor tcpcliente
 
 tcpservidor : tcpservidor.c
-	$(CC) $(CFLAGS) -o tcpservidor tcpservidor.c
+	$(CC) $(CFLAGS) -o tcpservidor tcpservidor.c -lpthread
 
 tcpcliente : tcpcliente.c 
 	$(CC) $(CFLAGS) -o tcpcliente tcpcliente.c
