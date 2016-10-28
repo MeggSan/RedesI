@@ -13,7 +13,7 @@
  * Descripción: 
  * Parámetros:
  */
- int MaxCajeros(int socket, struct sockaddr_in direcc) {
+ /* int MaxCajeros(int socket, struct sockaddr_in direcc) {
 
 	int contador;
     char buffer[TAMBUFFER];
@@ -29,7 +29,7 @@
     close(socket);
 
     return 0; 
-}
+} */
 
 /* Función: MaxClientes
  * Descripción: 

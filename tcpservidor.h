@@ -30,7 +30,7 @@
 
 /* Declaración de funciones */
 
-int MaxCajeros(int socket, struct sockaddr_in direcc);
+/* int MaxCajeros(int socket, struct sockaddr_in direcc); */
 int MaxClientes(int socket, struct sockaddr_in direcc);
 char* HoraCajero(time_t t, struct tm tmp);
 char* FechaCajero(time_t t, struct tm tmp);
