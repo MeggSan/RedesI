@@ -16,7 +16,7 @@
 	/*                           VARIABLES GLOBALES                      */
 	/*********************************************************************/
 
-int TotalDisponible = 6000;
+int TotalDisponible = 80000;
 
 /* Contador para el número de hijos */
 int countchild = 0; 

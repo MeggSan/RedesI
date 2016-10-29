@@ -1,78 +1,27 @@
  Fecha: 29/9/116 
-  Hora: 9:16 
+  Hora: 16:42 
   Codigo de usuario: 9999 
+  Operacion: 3000 
   Monto en la operacion: 3000 
   Total Disponible: 77000 
 
  Fecha: 29/9/116 
-  Hora: 9:17 
+  Hora: 16:43 
   Codigo de usuario: 9999 
-  Monto en la operacion: 1500 
-  Total Disponible: 75500 
+  Operacion: 3000 
+  Monto en la operacion: 3000 
+  Total Disponible: 77000 
 
  Fecha: 29/9/116 
-  Hora: 11:32 
+  Hora: 16:47 
+    Codigo de usuario: 9999 
+    Operacion: 2500 
+    Monto en la operacion: 2500 
+    Total Disponible: 77500 
+
+ Fecha: 29/9/116 
+  Hora: 17:3 
   Codigo de usuario: 9999 
-  Monto en la operacion: 2000 
+  Operacion: 2000 
   Total Disponible: 78000 
-
- Fecha: 29/9/116 
-  Hora: 11:38 
-  Codigo de usuario: 9999 
-  Monto en la operacion: 3000 
-  Total Disponible: 77000 
-
- Fecha: 29/9/116 
-  Hora: 11:52 
-  Codigo de usuario: 9999 
-  Monto en la operacion: 3000 
-  Total Disponible: 77000 
-
- Fecha: 29/9/116 
-  Hora: 11:52 
-  Codigo de usuario: 9999 
-  Monto en la operacion: 2000 
-  Total Disponible: 75000 
-
- Fecha: 29/9/116 
-  Hora: 11:58 
-  Codigo de usuario: 9999 
-  Monto en la operacion: 3000 
-  Total Disponible: 80000 
-
- Fecha: 29/9/116 
-  Hora: 12:29 
-  Codigo de usuario: 9999 
-  Monto en la operacion: 3000 
-  Total Disponible: 77000 
-
- Fecha: 29/9/116 
-  Hora: 12:29 
-  Codigo de usuario: 9999 
-  Monto en la operacion: 3000 
-  Total Disponible: 74000 
-
- Fecha: 29/9/116 
-  Hora: 12:29 
-  Codigo de usuario: 9999 
-  Monto en la operacion: 3000 
-  Total Disponible: 71000 
-
- Fecha: 29/9/116 
-  Hora: 14:1 
-  Codigo de usuario: 9999 
-  Monto en la operacion: 3000 
-  Total Disponible: 77000 
-
- Fecha: 29/9/116 
-  Hora: 14:17 
-  Codigo de usuario: 9999 
-  Monto en la operacion: 2000 
-  Total Disponible: 4000 
-
- Fecha: 29/9/116 
-  Hora: 15:56 
-  Codigo de usuario: 9998 
-  Monto en la operacion: 3000 
-  Total Disponible: 3000 
 

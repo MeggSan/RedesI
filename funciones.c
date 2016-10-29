@@ -72,7 +72,6 @@ char* FechaCajero(time_t d, struct tm dmp) {
 	return date;
 }
 
-
 /* Función: EscrituraArchivo
  * Descripción: Función que escribirá en un archivo donde se llevará el registro
  * 				de todas las operaciones realizadas indicando fecha, hora, 
@@ -95,7 +94,7 @@ void EscrituraArchivo(FILE *archivo, char fecha[TAMBUFFER],
 	fprintf(archivo, "%s %s %s %s %d %s %s %d %s %s %d %s", 
 					 " Hora:", hora, "\n",
 					 " Codigo de usuario:", codigo_usuario, "\n",
-					 " Monto en la operacion:", monto, "\n",
+					 " Operacion:", monto, "\n",
 					 " Total Disponible:", TotalDisponible, "\n\n");
 
 	fclose(archivo);
