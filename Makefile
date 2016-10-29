@@ -1,6 +1,4 @@
- # 
  # Archivo: Makefile
- #
  #
  # Autores: Cristina Betancourt # Carnet 11-10104
  #  		Meggie Sanchez      # Carnet 11-10939
@@ -22,5 +20,5 @@ funciones : funciones.c
 	$(CC) $(CFLAGS) -o funciones funciones.c
 
 clean :
-	/bin/rm tcpservidor tcpcliente funciones
+	/bin/rm tcpservidor tcpcliente
 

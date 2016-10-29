@@ -58,3 +58,15 @@
   Monto en la operacion: 3000 
   Total Disponible: 83000 
 
+ Fecha: 29/9/116 
+  Hora: 15:57 
+  Codigo de usuario: 9999 
+  Monto en la operacion: 2000 
+  Total Disponible: 5000 
+
+ Fecha: 29/9/116 
+  Hora: 15:57 
+  Codigo de usuario: 9949 
+  Monto en la operacion: 2500 
+  Total Disponible: 7500 
+

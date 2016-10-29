@@ -1,7 +1,8 @@
 /* 
  * Archivo: LEEME.txt
  *
- * Este LEEME.txt contiene los nombres de archivos necesarios para la aplicación * de sockets, y sus respectivas funcionalidades, que hace el programa, como se
+ * Este LEEME.txt contiene los nombres de archivos necesarios para la aplicación 
+ * de sockets, y sus respectivas funcionalidades, que hace el programa, como se
  * ejecuta el mismo y si posee alguna particularidad
  *
  * Autores: Cristina Betancourt # Carnet 11-10104
@@ -56,14 +57,19 @@
                     -l <puerto_bsb_svr>
                          Se especifica el puerto donde se establecerá la 
                          conexión entre el servidor y los posibles 3 clientes.
-                         SÓLO se podra hacer uso de los puertos 20104 y 20939.
-
+                         
                     -i <bitácora_depósito>
-                         Se especifica el archivo que se va a crear donde se escribirá todo lo correspondiente a únicamente los depósitos como fecha, hora, código de usuario, monto de la operación realizada y el total disponible de cada 
+                         Se especifica el archivo que se va a crear donde se 
+                         escribirá todo lo correspondiente a únicamente los 
+                         depósitos como fecha, hora, código de usuario, monto de
+                         la operación realizada y el total disponible de cada 
                          conexión establecida por un cliente.
 
                     -o <bitácora_retiro>
-                         Se especifica el archivo que se va a crear donde se escribirá todo lo correspondiente a únicamente los retiros como fecha, hora, código de usuario, monto de la operación realizada y el total disponible de cada 
+                         Se especifica el archivo que se va a crear donde se 
+                         escribirá todo lo correspondiente a únicamente los 
+                         retiros como fecha, hora, código de usuario, monto de 
+                         la operación realizada y el total disponible de cada 
                          conexión establecida por un cliente.
 
                     2.2) Para la ejecución del cliente:
@@ -74,15 +80,29 @@
                     Donde:
 
                     -d <nombre_módulo_atención>
-                         Se especifica el IPv4 correspondiente a donde se está ejecutando el servidor.
+                         Se especifica el IPv4 correspondiente a donde se está 
+                         ejecutando el servidor.
 
                     -i <codigo_usuario>
-                         Se especifica el número serial que identifica a un usuario de manera única.
-                         Este número se encuentra entre 1000 y 9999.
+                         Se especifica el número serial que identifica a un 
+                         usuario de manera única.
 
                3) Después de probar la aplicación, haciendo uso del comando
                make clean, se borran todos los ejecutables generados en la 
                compilación.
 _________________________________________________________________________
 
-     La implementación del programa y aspectos importantes:
+     La implementación del programa:
+
+     Aspectos importantes:
+
+         1) Al introducir el número de puerto SÓLO se podra hacer uso de los 
+         puertos 20104 y 20939.
+
+         2) El puerto tanto en el servidor como en el cliente es necesario que 
+         sea el mismo.
+
+         3) Al introducir el número del código de usuario, determinamos que el
+         mismo se encuentre entre 1000 y 9999 para así representar el número 
+         serial de 4 dígitos.
+
