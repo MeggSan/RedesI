@@ -18,6 +18,9 @@ tcpservidor : tcpservidor.c
 tcpcliente : tcpcliente.c 
 	$(CC) $(CFLAGS) -o tcpcliente tcpcliente.c
 
+funciones : funciones.c
+	$(CC) $(CFLAGS) -o funciones funciones.c
+
 clean :
-	/bin/rm tcpservidor tcpcliente
+	/bin/rm tcpservidor tcpcliente funciones
 
