@@ -29,11 +29,22 @@
 #define TAMBUFFER 512 /* Tamaño del buffer */
 #define MAXCLIENTES 3 /* Conexiones permitidas */
 
+/** Renombrando Estructura Atributos a Atributos.*/
+typedef struct Atributos Atributos;
+
+/** Estructura de Datos Atributos */
+struct Atributos{
+	int fp;
+	char *ArchivoRetiro;
+	char *ArchivoDeposito;
+	int hilo;
+};
+
 /* Declaración de funciones */
 
 /* int MaxCajeros(int socket, struct sockaddr_in direcc); */
-int MaxClientes(int socket, struct sockaddr_in direcc);
+void MaxClientes(int socket, struct sockaddr_in direcc);
 char* HoraCajero(time_t t, struct tm tmp);
 char* FechaCajero(time_t t, struct tm tmp);
 void EscrituraArchivo(FILE *archivo, char fecha[TAMBUFFER], char hora[TAMBUFFER], int codigo_usuario, int monto, int TotalDisponible, char NombreArchivo[64]);
-void *CajeroCliente(void *arg);
+//void *CajeroCliente(void * atributos);

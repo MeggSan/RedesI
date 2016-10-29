@@ -31,11 +31,28 @@
     return 0; 
 } */
 
+/* Variables globales */
+int TotalDisponible = 80000;
+/* Contador para el número de hijos */
+int countchild = 0; 
+int idHilo = 0;
+int HilosLibres[3] = {1,1,1};
+pthread_mutex_t lock;      
+pthread_mutex_t lock1;      
+pthread_mutex_t lock2; 
+pthread_mutex_t lock3;
+/* Bitacora deposito (archivo) */
+FILE *depositos;
+
+/* Bitacora retiro (archivo) */
+FILE *retiros;
+
+
 /* Función: MaxClientes
  * Descripción: 
  * Parámetros:
  */
-int MaxClientes(int socket, struct sockaddr_in direcc) {
+void MaxClientes(int socket, struct sockaddr_in direcc) {
 
 	int contador;
     char buffer[TAMBUFFER];
@@ -49,8 +66,6 @@ int MaxClientes(int socket, struct sockaddr_in direcc) {
 	}
     
     close(socket);
-
-    return 0; 
 }
 
 /* Función: HoraCajero
@@ -125,7 +140,14 @@ void EscrituraArchivo(FILE *archivo, char fecha[TAMBUFFER], char hora[TAMBUFFER]
  * Descripción: 
  * Parámetros:
  */
-void *CajeroCliente(void *arg) {
+void *CajeroCliente(void * atributosHilo) {
+	countchild ++;
+
+	Atributos * atributos = (Atributos *)atributosHilo;
+
+	/* Variables necesarias para la fecha y la hora del servidor */
+	time_t t;
+	struct tm tmp;
 	
  	int monto; 
  	int codigo_usuario;
@@ -135,10 +157,10 @@ void *CajeroCliente(void *arg) {
 
  	int numbytes;
 	char buffer[TAMBUFFER];
-	send(fp2, " Bienvenido a mi servidor", 25, 0);
+	send(atributos->fp, " Bienvenido a mi servidor", 25, 0);
 	
 	//Se recibe el tipo de operacion (deposito o retiro)
-	if ((numbytes = recv(fp2, buffer, TAMBUFFER, 0)) == -1) {  
+	if ((numbytes = recv(atributos->fp, buffer, TAMBUFFER, 0)) == -1) {  
 		perror(" 1 Error en la funcion recv() \n");
 		exit(-1);
   	}
@@ -148,7 +170,7 @@ void *CajeroCliente(void *arg) {
   	if (strcmp("r", operacion) == 0){
   		
   		//Se recibe el monto de la operacion
-		if ((numbytes = recv(fp, buffer, TAMBUFFER, 0)) == -1) { 
+		if ((numbytes = recv(atributos->fp, buffer, TAMBUFFER, 0)) == -1) { 
 			perror(" 2 Error en la funcion recv() \n");
 			exit(-1);
 	  	}
@@ -158,11 +180,11 @@ void *CajeroCliente(void *arg) {
 	  		char totalString[TAMBUFFER];
 	  		sprintf(totalString, "%d", TotalDisponible);
 	  		// Se envia el total disponible
-	  		send(fp,totalString,TAMBUFFER,0);
+	  		send(atributos->fp,totalString,TAMBUFFER,0);
 
 			if (TotalDisponible>5000){
 			  	//Se recibe el codigo del usuario
-				if ((numbytes = recv(fp, buffer, TAMBUFFER, 0)) == -1) {
+				if ((numbytes = recv(atributos->fp, buffer, TAMBUFFER, 0)) == -1) {
 					perror(" 3 Error en la funcion recv() \n");
 					exit(-1);
 			  	}
@@ -171,24 +193,24 @@ void *CajeroCliente(void *arg) {
 			  	
 			  	strcpy(fecha, FechaCajero(t, tmp));
 			  	strcpy(hora, HoraCajero(t, tmp));
-			  	send(fp, fecha, TAMBUFFER, 0);
-				send(fp, hora, TAMBUFFER, 0);
+			  	send(atributos->fp, fecha, TAMBUFFER, 0);
+				send(atributos->fp, hora, TAMBUFFER, 0);
 
 			  	TotalDisponible -= monto;
-			  	EscrituraArchivo(retiros, fecha, hora, codigo_usuario, monto, TotalDisponible, ArchivoRetiro);
+			  	EscrituraArchivo(retiros, fecha, hora, codigo_usuario, monto, TotalDisponible, atributos->ArchivoRetiro);
 			}
 		}
   	}
   	else if (strcmp("d", operacion) == 0){
   		//Se recibe el monto de la operacion
-		if ((numbytes = recv(fp, buffer, TAMBUFFER, 0)) == -1) { 
+		if ((numbytes = recv(atributos->fp, buffer, TAMBUFFER, 0)) == -1) { 
 			perror(" 4 Error en la funcion recv() \n");
 			exit(-1);
 	  	}
 	  	buffer[numbytes] = '\0';
 	  	monto = atoi(buffer);
 	  	//Se recibe el codigo del usuario
-		if ((numbytes = recv(fp, buffer, TAMBUFFER, 0)) == -1) {  
+		if ((numbytes = recv(atributos->fp, buffer, TAMBUFFER, 0)) == -1) {  
 			perror(" 5 Error en la funcion recv() \n");
 			exit(-1);
 	  	}
@@ -197,13 +219,14 @@ void *CajeroCliente(void *arg) {
 	  	
 	  	strcpy(fecha, FechaCajero(t, tmp));
 	  	strcpy(hora, HoraCajero(t, tmp));
-	  	send(fp, fecha, TAMBUFFER, 0);
-		send(fp, hora, TAMBUFFER, 0);
+	  	send(atributos->fp, fecha, TAMBUFFER, 0);
+		send(atributos->fp, hora, TAMBUFFER, 0);
 
 	  	TotalDisponible += monto;
-	  	EscrituraArchivo(depositos, fecha, hora, codigo_usuario, monto, TotalDisponible, ArchivoDeposito);
+	  	EscrituraArchivo(depositos, fecha, hora, codigo_usuario, monto, TotalDisponible, atributos->ArchivoDeposito);
   	}
-	close(fp);
+	close(atributos->fp);
+	countchild --;
 }
 
 
@@ -212,8 +235,7 @@ int main(int argc, char *argv[]) {
 
 	/************************* HILOS *************************/
 
-	pthread_t h;
-
+	pthread_t h[3];
 	int valor_hilo;
 
 	/* Ficheros descriptores */
@@ -230,9 +252,6 @@ int main(int argc, char *argv[]) {
 	/* Proceso id del hijo */
 	int childpid;  
 
-	/* Contador para el número de hijos */
-	int countchild = 0; 
-
 	/* Estado del proceso hijo */
 	int pidstatus; 
 
@@ -248,24 +267,13 @@ int main(int argc, char *argv[]) {
 	/* Nombre de la bitacora de retiro */
 	char ArchivoRetiro[64];   
 
-	/* Bitacora deposito (archivo) */
-	FILE *depositos;
-
-	/* Bitacora retiro (archivo) */
-	FILE *retiros;
+	
 
 	/* Contador para la cantidad de cajeros registrados */
 	/*	char* listaCajeros[3];
 	listaCajeros[0] = NULL;
 	listaCajeros[1] = NULL;
 	listaCajeros[2] = NULL;*/
-
-	/* Variables necesarias para la fecha y la hora del servidor */
-	time_t t;
-	struct tm tmp;
-
-	/* Variable Total Disponible del servidor */
-	int TotalDisponible = 80000;
 
 	if (strcmp("bsb_svr", argv[1]) != 0) {
 		printf(" Entrada incorrecta: Debe comenzar con bsb_svr\n");
@@ -347,6 +355,17 @@ int main(int argc, char *argv[]) {
 	/************************* HILOS *************************/
 
 	while(1) {
+		
+        // Busca el primer hilo que se encuentre libre.
+        if (HilosLibres[0] == 1 ){
+            idHilo = 0;
+        }
+        else if (HilosLibres[1] == 1 ){
+            idHilo = 1;
+        }
+        else if (HilosLibres[2] == 1 ){
+            idHilo = 2;
+        }
 		/* Limpia el conjunto de descriptores */
 		FD_ZERO(&fps); 
 
@@ -365,24 +384,28 @@ int main(int argc, char *argv[]) {
 			}
 
 			else {
+				Atributos *atributosHilo = (Atributos *)malloc(sizeof(Atributos));
+				atributosHilo->fp = fp2;
+				atributosHilo->hilo = idHilo;
+				atributosHilo->ArchivoDeposito = ArchivoDeposito;
+				atributosHilo->ArchivoRetiro = ArchivoRetiro;
+
 				if (MAXCLIENTES > countchild) {
 					printf("\n Se ha conectado %s por su puerto %d\n", inet_ntoa(cliente.sin_addr), cliente.sin_port);
 					printf(" 2 TOTAL DISP ANTES: %d\n",TotalDisponible );
-					countchild ++;
-					valor_hilo = pthread_create(&h, NULL, CajeroCliente, NULL);
+					//countchild ++;
+					valor_hilo = pthread_create(&h[idHilo], NULL, CajeroCliente, (void *)atributosHilo);
 					if (valor_hilo != 0) {
-						perror("NO SE PUDO CREAR HILO: hilo_cliente3");
+						perror("NO SE PUDO CREAR HILO");
 						exit(0);
 					}
 					printf("2 TOTAL DISP DESPUES: %d\n",TotalDisponible );
-					pthread_join(h, NULL);
-					countchild --;
+					//countchild --;
 				}
 				else {
-					exit(MaxClientes(fp2, cliente));
+					MaxClientes(fp2, cliente);
 				}
-				
-				close(fp2); 
+				 
 			}
 		}
 	}
