@@ -94,7 +94,7 @@ void EscrituraArchivo(FILE *archivo, char fecha[TAMBUFFER],
 	fprintf(archivo, "%s %s %s %s %d %s %s %d %s %s %d %s", 
 					 " Hora:", hora, "\n",
 					 " Codigo de usuario:", codigo_usuario, "\n",
-					 " Operacion:", monto, "\n",
+					 " Monto:", monto, "\n",
 					 " Total Disponible:", TotalDisponible, "\n\n");
 
 	fclose(archivo);
