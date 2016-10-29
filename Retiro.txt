@@ -1,18 +1,18 @@
- Fecha: 28/9/116 
-  Hora: 22:28 
-  Codigo de usuario: 2893 
-  Monto en la operacion: 2500 
-  Total Disponible: 77500 
+ Fecha: 29/9/116 
+  Hora: 9:16 
+  Codigo de usuario: 9999 
+  Monto en la operacion: 3000 
+  Total Disponible: 77000 
 
- Fecha: 28/9/116 
-  Hora: 22:28 
-  Codigo de usuario: 2893 
-  Monto en la operacion: 1000 
-  Total Disponible: 76500 
+ Fecha: 29/9/116 
+  Hora: 9:17 
+  Codigo de usuario: 9999 
+  Monto en la operacion: 1500 
+  Total Disponible: 75500 
 
- Fecha: 28/9/116 
-  Hora: 22:39 
-  Codigo de usuario: 2893 
+ Fecha: 29/9/116 
+  Hora: 11:32 
+  Codigo de usuario: 9999 
   Monto en la operacion: 2000 
-  Total Disponible: 98000 
+  Total Disponible: 78000 
 

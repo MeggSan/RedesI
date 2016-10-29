@@ -18,6 +18,6 @@ tcpservidor : tcpservidor.c
 tcpcliente : tcpcliente.c 
 	$(CC) $(CFLAGS) -o tcpcliente tcpcliente.c
 
-clear :
-	rm *.o
+clean :
+	/bin/rm tcpservidor tcpcliente
 
