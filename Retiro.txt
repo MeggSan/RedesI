@@ -1,0 +1,6 @@
+ Fecha: 30/10/2016 
+  Hora: 16:38 
+  Codigo de usuario: 1500 
+  Monto: 3000 
+  Total Disponible: 77000 
+

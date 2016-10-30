@@ -38,7 +38,6 @@ struct Atributos {
 	char *ArchivoRetiro; 
 	char *ArchivoDeposito;
 	int hilo;
-	struct sockaddr_in direccion;
 
 };
 

@@ -380,8 +380,7 @@ int main(int argc, char *argv[]) {
 				atributosHilo->hilo = idHilo;
 				atributosHilo->ArchivoDeposito = ArchivoDeposito;
 				atributosHilo->ArchivoRetiro = ArchivoRetiro;
-				atributosHilo->direccion = cliente;
-
+				
 				/* Para verificar que no hayan más de 3 conexiones */
 				if (MAXCLIENTES > countchild) {
 					printf("\n Se ha conectado %s por su puerto %d\n", inet_ntoa(cliente.sin_addr), cliente.sin_port);
