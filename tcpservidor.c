@@ -66,14 +66,14 @@ void *CajeroCliente(void * atributosHilo) {
  	int monto; 
  	int codigo_usuario;
  	char* operacion;
- 	char fecha[TAMBUFFER];
- 	char hora[TAMBUFFER];
+ 	char fecha[8];
+ 	char hora[5];
 
  	int numbytes;
 	char buffer[TAMBUFFER];
 
 	/* Recibe el código del usuario */
-	if ((numbytes = recv(atributos->fp, buffer, TAMBUFFER, 0)) == -1) {
+	if ((numbytes = recv(atributos->fp, buffer, 16, 0)) == -1) {
 		perror(" 3 Error en la funcion recv() \n");
 		exit(-1);
   	}
@@ -108,7 +108,7 @@ void *CajeroCliente(void * atributosHilo) {
   		send(atributos->fp, " Bienvenido a mi servidor", 25, 0);
 		
 		/* Recibe el tipo de operación (depósito o retiro) */
-		if ((numbytes = recv(atributos->fp, buffer, TAMBUFFER, 0)) == -1) {  
+		if ((numbytes = recv(atributos->fp, buffer, 1, 0)) == -1) {  
 			perror(" 1 Error en la funcion recv() \n");
 			exit(-1);
 	  	}
@@ -151,10 +151,10 @@ void *CajeroCliente(void * atributosHilo) {
 					  	strcpy(hora, HoraCajero(t, tmp));
 
 					  	/* Envia la fecha */
-					  	send(atributos->fp, fecha, TAMBUFFER, 0);
+					  	send(atributos->fp, fecha, 8, 0);
 
 						/* Envia la hora */
-						send(atributos->fp, hora, TAMBUFFER, 0);
+						send(atributos->fp, hora, 5, 0);
 
 					  	TotalDisponible -= monto;
 					  	EscrituraArchivo(retiros, fecha, hora, codigo_usuario, monto, TotalDisponible, atributos->ArchivoRetiro);
@@ -165,6 +165,7 @@ void *CajeroCliente(void * atributosHilo) {
 	  	}
 
 	  	else if (strcmp("d", operacion) == 0) {
+
 	  		/* Recibe el monto del depósito */
 			if ((numbytes = recv(atributos->fp, buffer, TAMBUFFER, 0)) == -1) { 
 				perror(" 4 Error en la funcion recv() \n");
@@ -174,7 +175,7 @@ void *CajeroCliente(void * atributosHilo) {
 
 		  	monto = atoi(buffer);
 		  	/* Recibe el código del usuario */
-			if ((numbytes = recv(atributos->fp, buffer, TAMBUFFER, 0)) == -1) {  
+			if ((numbytes = recv(atributos->fp, buffer, 16, 0)) == -1) {  
 				perror(" 5 Error en la funcion recv() \n");
 				exit(-1);
 		  	}
@@ -186,10 +187,10 @@ void *CajeroCliente(void * atributosHilo) {
 		  	strcpy(hora, HoraCajero(t, tmp));
 
 		  	/* Envia la fecha */
-		  	send(atributos->fp, fecha, TAMBUFFER, 0);
+		  	send(atributos->fp, fecha, 8, 0);
 
 		  	/* Envia la hora */
-			send(atributos->fp, hora, TAMBUFFER, 0);
+			send(atributos->fp, hora, 5, 0);
 
 		  	TotalDisponible += monto;
 		  	EscrituraArchivo(depositos, fecha, hora, codigo_usuario, monto, TotalDisponible, atributos->ArchivoDeposito);

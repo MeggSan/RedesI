@@ -133,9 +133,9 @@ int main(int argc, char *argv[]) {
 	/*********************************************************************/
 
     /* Envia el código de usuario */
-  	char codigoString[TAMBUFFER];
+  	char codigoString[16];
 	sprintf(codigoString, "%d", codigo_usuario);
-	send(fp, codigoString,TAMBUFFER,0);
+	send(fp, codigoString, 16, 0);
 
 	/* Recibe si ya esta conectado un usuario con Usuario Disponible o Usuario
 	   Conectado */
@@ -152,7 +152,7 @@ int main(int argc, char *argv[]) {
 	else if (strcmp(buffer, " Usuario disponible") == 0) {
 
 	    /* Recibe la bienvenida del servidor */
-	    if ((numbytes = recv(fp, buffer, TAMBUFFER, 0)) == -1) {  
+	    if ((numbytes = recv(fp, buffer, 25, 0)) == -1) {  
 			perror(" Error en la funcion recv() \n");
 			exit(-1);
 	    }
@@ -167,13 +167,13 @@ int main(int argc, char *argv[]) {
 	    else {
 	    
 		    /* Envia la operación a realizar */
-		 	send(fp, operacion, TAMBUFFER, 0);
+		 	send(fp, operacion, 1, 0);
 
 		    if (strcmp("r", operacion) == 0) {
 
 				/* Recibe si se puede realizar el retiro con Denegado o 
 				   Permitido */
-				if ((numbytes = recv(fp, buffer, TAMBUFFER, 0)) == -1) {  
+				if ((numbytes = recv(fp, buffer, 10, 0)) == -1) {  
 					perror(" Error en la funcion recv() \n");
 					exit(-1);
 	    		}
@@ -189,7 +189,7 @@ int main(int argc, char *argv[]) {
 	    			printf(" Introduzca el monto a retirar: \n");
 
 			    	char entrada[TAMBUFFER];
-			    	scanf("%d",&monto);
+			    	scanf("%d", &monto);
 			    	sprintf(entrada, "%d", monto);
 
 			    	/* Envia el monto a retirar al servidor */
@@ -210,7 +210,7 @@ int main(int argc, char *argv[]) {
 
 			  			/* Verifica que el total disponible sea mayor a 5000 */
 			  			if (atoi(buffer) <= 5000) {
-			  				printf(" Monto insuficiente. \n");
+			  				printf(" Dinero No disponible. \n");
 			  			}
 
 			  			else {
@@ -218,7 +218,7 @@ int main(int argc, char *argv[]) {
 			  				printf(" El retiro se ha realizado satisfactoriamente.\n");
 
 			  				/* Recibe la fecha */ 
-				    		if ((numbytes = recv(fp, buffer, TAMBUFFER, 0)) == -1) { 
+				    		if ((numbytes = recv(fp, buffer, 8, 0)) == -1) { 
 								perror(" Error en la funcion recv() \n");
 								exit(-1);
 				  			}
@@ -226,7 +226,7 @@ int main(int argc, char *argv[]) {
 			  				printf(" Fecha: %s\n", buffer);
 
 			  				/* Recibe la hora */
-				    		if ((numbytes = recv(fp, buffer, TAMBUFFER, 0)) == -1) {
+				    		if ((numbytes = recv(fp, buffer, 5, 0)) == -1) {
 								perror(" Error en la funcion recv() \n");
 								exit(-1);
 				  			}
@@ -250,15 +250,15 @@ int main(int argc, char *argv[]) {
 		    	/* Envia el monto a depositar al servidor */
 		    	send(fp, entrada, TAMBUFFER, 0);
 
-		    	char codigoString[TAMBUFFER];
+		    	char codigoString[16];
 				sprintf(codigoString, "%d", codigo_usuario);
 
 				/* Envia el código de usuario al servidor */
-				send(fp, codigoString,TAMBUFFER,0);
+				send(fp, codigoString, 16, 0);
 				printf(" El deposito se ha realizado satisfactoriamente. \n");
 
 				/* Recibe la fecha */
-				if ((numbytes = recv(fp, buffer, TAMBUFFER, 0)) == -1) {
+				if ((numbytes = recv(fp, buffer, 8, 0)) == -1) {
 					perror(" Error en la funcion recv() \n");
 					exit(-1);
 				}
@@ -266,14 +266,14 @@ int main(int argc, char *argv[]) {
 				printf(" Fecha: %s\n", buffer);
 
 				/* Recibe la hora */
-				if ((numbytes = recv(fp, buffer, TAMBUFFER, 0)) == -1) {
+				if ((numbytes = recv(fp, buffer, 5, 0)) == -1) {
 					perror(" Error en la funcion recv() \n");
 					exit(-1);
 				}
 				buffer[numbytes] = '\0';
 				printf(" Hora: %s\n", buffer);
 
-				printf(" Usuario: %d\n", codigo_usuario);
+				printf(" Codigo de usuario: %d\n", codigo_usuario);
 		    }
 		}
 	}
