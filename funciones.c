@@ -35,7 +35,7 @@ void MaxClientes(int socket) {
 		exit(-1);
 	}
     
-    //close(socket);
+    close(socket);
 }
 
 /* Función: HoraCajero

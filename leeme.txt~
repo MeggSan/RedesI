@@ -1,0 +1,108 @@
+/* 
+ * Archivo: LEEME.txt
+ *
+ * Este LEEME.txt contiene los nombres de archivos necesarios para la aplicación 
+ * de sockets, y sus respectivas funcionalidades, que hace el programa, como se
+ * ejecuta el mismo y si posee alguna particularidad
+ *
+ * Autores: Cristina Betancourt # Carnet 11-10104
+ *  		  Meggie Sanchez      # Carnet 11-10939
+ */
+
+ Al momento de abrir la carpeta usted verá los siguientes archivos:
+
+     * Makefile : 
+          Contiene los comandos para la ejecución y eliminado de los
+          ejecutables, archivos objeto (.o), y cualquier otro archivo 
+          generado automáticamente a partir de los fuentes.
+
+     * tcpcliente.c : 
+          Programa principal Cliente que simula los cajeros automáticos de la 
+          red de cajeros automáticos de la Universidad Simón Bolívar, donde se 
+          encuentra las verificaciones para que la entrada en el terminal este 
+          correcta, todo lo necesario para la correcta conexión del socket con 
+          el servidor, y por último todo el código correspondiente al 
+          intercambio de mensajes entre el cliente y el servidor.
+
+     * tcpservidor.c : 
+          Programa principal Servidor que simula el computador central, donde se
+          encuentra las funciones usadas para el servidor, las verificaciones 
+          para que la entrada en el terminal este correcta, todo lo necesario 
+          para la correcta conexión del socket con el cliente, y el uso 
+          necesario de hilos para que se logren conectar 3 clientes al mismo 
+          tiempo.
+     _________________________________________________________________________
+
+     La aplicación fue realizada en lenguaje C, y ejecutada con el compilador 
+     gcc en los S.O. Debian 8.0 y Ubuntu 14.04. El programa fue probado para
+     su correcta compilación y ejecución en diversas máquinas del LDC,
+     como por ejemplo en la máquina harq.
+     _________________________________________________________________________
+
+     Para la invocación a la ejecución del programa:
+
+     Pasos:    1) Compilar la aplicación, haciendo uso del comando make en el 
+               terminal.
+
+               2) Ejecutar la aplicación mediante el siguiente formato de
+               invocación:
+
+                    2.1) Para la ejecución del servidor:
+
+                    ./tcpservidor bsb_svr -l <puerto_bsb_svr> 
+                    -i <bitácora_depósito> -o <bitácora_retiro>
+
+                    Donde:
+
+                    -l <puerto_bsb_svr>
+                         Se especifica el puerto donde se establecerá la 
+                         conexión entre el servidor y los posibles 3 clientes.
+                         
+                    -i <bitácora_depósito>
+                         Se especifica el archivo que se va a crear donde se 
+                         escribirá todo lo correspondiente a únicamente los 
+                         depósitos como fecha, hora, código de usuario, monto de
+                         la operación realizada y el total disponible de cada 
+                         conexión establecida por un cliente.
+
+                    -o <bitácora_retiro>
+                         Se especifica el archivo que se va a crear donde se 
+                         escribirá todo lo correspondiente a únicamente los 
+                         retiros como fecha, hora, código de usuario, monto de 
+                         la operación realizada y el total disponible de cada 
+                         conexión establecida por un cliente.
+
+                    2.2) Para la ejecución del cliente:
+
+                    ./tcpcliente bsb_cli -d <nombre_módulo_atención> 
+                    -i <codigo_usuario>
+
+                    Donde:
+
+                    -d <nombre_módulo_atención>
+                         Se especifica el IPv4 correspondiente a donde se está 
+                         ejecutando el servidor.
+
+                    -i <codigo_usuario>
+                         Se especifica el número serial que identifica a un 
+                         usuario de manera única.
+
+               3) Después de probar la aplicación, haciendo uso del comando
+               make clean, se borran todos los ejecutables generados en la 
+               compilación.
+_________________________________________________________________________
+
+     La implementación del programa:
+
+     Aspectos importantes:
+
+         1) Al introducir el número de puerto SÓLO se podra hacer uso de los 
+         puertos 20104 y 20939.
+
+         2) El puerto tanto en el servidor como en el cliente es necesario que 
+         sea el mismo.
+
+         3) Al introducir el número del código de usuario, determinamos que el
+         mismo se encuentre entre 1000 y 9999 para así representar el número 
+         serial de 4 dígitos.
+

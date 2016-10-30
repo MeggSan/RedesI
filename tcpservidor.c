@@ -206,8 +206,10 @@ void *CajeroCliente(void * atributosHilo) {
 
 
 	HilosLibres[atributos->hilo] = 1;
+	close(atributos->fp);
 	free(atributos);
 	countchild --;
+
 }
 
 int main(int argc, char *argv[]) {
@@ -378,6 +380,7 @@ int main(int argc, char *argv[]) {
 				atributosHilo->hilo = idHilo;
 				atributosHilo->ArchivoDeposito = ArchivoDeposito;
 				atributosHilo->ArchivoRetiro = ArchivoRetiro;
+				atributosHilo->direccion = cliente;
 
 				/* Para verificar que no hayan más de 3 conexiones */
 				if (MAXCLIENTES > countchild) {
@@ -397,7 +400,6 @@ int main(int argc, char *argv[]) {
 		}
 	}
 
-	printf("\n Se ha desconectado %s por su puerto %d\n", inet_ntoa(cliente.sin_addr), cliente.sin_port);
 	close(fp2);
 
 	return 0;	

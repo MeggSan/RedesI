@@ -34,10 +34,12 @@ typedef struct Atributos Atributos;
 
 /* Estructura de Datos Atributos para los hilos */
 struct Atributos {
-	int fp; /* Descriptor del socket */
+	int fp; 
 	char *ArchivoRetiro; 
 	char *ArchivoDeposito;
 	int hilo;
+	struct sockaddr_in direccion;
+
 };
 
 /* Declaración de funciones */
