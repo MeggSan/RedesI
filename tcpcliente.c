@@ -127,7 +127,6 @@ int main(int argc, char *argv[]) {
 		perror(" Error de connect() debido a IP incorrecto o puerto incorrecto \n");
 		exit(-1);
     }
-    
 	/*********************************************************************/
 	/*        INTERCAMBIOS DE MENSAJES ENTRE EL SERVIDOR Y CLIENTE       */
 	/*********************************************************************/
@@ -135,7 +134,7 @@ int main(int argc, char *argv[]) {
     /* Envia el código de usuario */
   	char codigoString[16];
 	sprintf(codigoString, "%d", codigo_usuario);
-	send(fp, codigoString, 16, 0);
+	send(fp, codigoString, 4, 0);
 
 	/* Recibe si ya esta conectado un usuario con Usuario Disponible o Usuario
 	   Conectado */
@@ -145,14 +144,14 @@ int main(int argc, char *argv[]) {
     }
     buffer[numbytes] = '\0';
 
-    if (strcmp(buffer, " Usuario conectado") == 0) {
+    if (strcmp(buffer, " Usuario conectado ") == 0) {
 		printf(" Ya se encuentra conectado este usuario \n");
 	}
 
 	else if (strcmp(buffer, " Usuario disponible") == 0) {
 
 	    /* Recibe la bienvenida del servidor */
-	    if ((numbytes = recv(fp, buffer, 25, 0)) == -1) {  
+	    if ((numbytes = recv(fp, buffer, 51, 0)) == -1) {  
 			perror(" Error en la funcion recv() \n");
 			exit(-1);
 	    }
@@ -160,7 +159,7 @@ int main(int argc, char *argv[]) {
 
 	    printf(" Mensaje del Servidor: %s\n", buffer); 
 
-	    if (strcmp(buffer, " Todos los cajeros estan en uso. Por favor, intente mas tarde \n") == 0) {
+	    if (strcmp(buffer, "Todos los cajeros estan en uso. Intente mas tarde \n") == 0) {
 			exit(0);
 	    }
 
@@ -218,7 +217,7 @@ int main(int argc, char *argv[]) {
 			  				printf(" El retiro se ha realizado satisfactoriamente.\n");
 
 			  				/* Recibe la fecha */ 
-				    		if ((numbytes = recv(fp, buffer, 8, 0)) == -1) { 
+				    		if ((numbytes = recv(fp, buffer, 10, 0)) == -1) { 
 								perror(" Error en la funcion recv() \n");
 								exit(-1);
 				  			}
@@ -258,7 +257,7 @@ int main(int argc, char *argv[]) {
 				printf(" El deposito se ha realizado satisfactoriamente. \n");
 
 				/* Recibe la fecha */
-				if ((numbytes = recv(fp, buffer, 8, 0)) == -1) {
+				if ((numbytes = recv(fp, buffer, 10, 0)) == -1) {
 					perror(" Error en la funcion recv() \n");
 					exit(-1);
 				}

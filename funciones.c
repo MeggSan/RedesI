@@ -17,10 +17,19 @@ void MaxClientes(int socket) {
 
 	int contador;
     char buffer[TAMBUFFER];
+    int numbytes;
     
-    memset(buffer, 0, TAMBUFFER);
-    sprintf(buffer, "%s", "Todos los cajeros estan en uso. Por favor, intente mas tarde \n");
+    
+    /* Recibe el código del usuario */
+	if ((numbytes = recv(socket, buffer, 4, 0)) == -1) {
+		perror(" 3 Error en la funcion recv() \n");
+		exit(-1);
+  	}
+  	buffer[numbytes] = '\0';
+  	send(socket, " Usuario disponible", 19, 0);
 
+  	memset(buffer, 0, TAMBUFFER);
+    sprintf(buffer, "%s", "Todos los cajeros estan en uso. Intente mas tarde \n");
     if ((contador = send(socket, buffer, strlen(buffer), 0)) == -1) {
 		perror(" No puedo enviar informacion \n");
 		exit(-1);
@@ -63,8 +72,8 @@ char* FechaCajero(time_t d, struct tm dmp) {
 
 	char date[TAMBUFFER];
 
-	int year = dmp.tm_year;
-	int month = dmp.tm_mon;
+	int year = dmp.tm_year+1900;
+	int month = dmp.tm_mon + 1;
 	int day = dmp.tm_mday;
 
 	sprintf(date, "%d/%d/%d",day,month,year);

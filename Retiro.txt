@@ -1,0 +1,12 @@
+ Fecha: 30/10/2016 
+  Hora: 14:48 
+  Codigo de usuario: 2893 
+  Monto: 200 
+  Total Disponible: 81800 
+
+ Fecha: 30/10/2016 
+  Hora: 14:48 
+  Codigo de usuario: 2893 
+  Monto: 200 
+  Total Disponible: 79800 
+

@@ -1,0 +1,66 @@
+ Fecha: 30/9/116 
+  Hora: 14:0 
+  Codigo de usuario: 2893 
+  Monto: 2000 
+  Total Disponible: 82000 
+
+ Fecha: 30/9/116 
+  Hora: 14:33 
+  Codigo de usuario: 2890 
+  Monto: 2000 
+  Total Disponible: 82000 
+
+ Fecha: 30/10/2016 
+  Hora: 14:35 
+  Codigo de usuario: 2890 
+  Monto: 2000 
+  Total Disponible: 82000 
+
+ Fecha: 30/10/2016 
+  Hora: 14:36 
+  Codigo de usuario: 2890 
+  Monto: 200 
+  Total Disponible: 82200 
+
+ Fecha: 30/10/2016 
+  Hora: 14:38 
+  Codigo de usuario: 2890 
+  Monto: 2000 
+  Total Disponible: 82000 
+
+ Fecha: 30/10/116 
+  Hora: 14:39 
+  Codigo de usuario: 2890 
+  Monto: 2000 
+  Total Disponible: 82000 
+
+ Fecha: 30/10/116 
+  Hora: 14:42 
+  Codigo de usuario: 2890 
+  Monto: 2000 
+  Total Disponible: 82000 
+
+ Fecha: 30/10/116 
+  Hora: 14:45 
+  Codigo de usuario: 2883 
+  Monto: 200 
+  Total Disponible: 80200 
+
+ Fecha: 30/10/2016 
+  Hora: 14:46 
+  Codigo de usuario: 2893 
+  Monto: 200 
+  Total Disponible: 80200 
+
+ Fecha: 30/10/2016 
+  Hora: 14:47 
+  Codigo de usuario: 2893 
+  Monto: 2000 
+  Total Disponible: 82000 
+
+ Fecha: 30/10/2016 
+  Hora: 14:48 
+  Codigo de usuario: 2893 
+  Monto: 2000 
+  Total Disponible: 81800 
+

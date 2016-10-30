@@ -73,7 +73,7 @@ void *CajeroCliente(void * atributosHilo) {
 	char buffer[TAMBUFFER];
 
 	/* Recibe el código del usuario */
-	if ((numbytes = recv(atributos->fp, buffer, 16, 0)) == -1) {
+	if ((numbytes = recv(atributos->fp, buffer, 4, 0)) == -1) {
 		perror(" 3 Error en la funcion recv() \n");
 		exit(-1);
   	}
@@ -88,12 +88,11 @@ void *CajeroCliente(void * atributosHilo) {
   			conectado = 1;
   		}
   	}
-
   	if (conectado == 1) {
+  		printf("IF Conectado %d \n",conectado);
   		/* Envia si el usuario ya esta conectado */
-  		send(atributos->fp, " Usuario conectado", 18, 0);
+  		send(atributos->fp, " Usuario conectado ", 19, 0);
   	}
-
   	else {
   		/* Envia si el usuario no esta conectado */
   		send(atributos->fp, " Usuario disponible", 19, 0);
@@ -106,7 +105,7 @@ void *CajeroCliente(void * atributosHilo) {
 
   		/* Envia la bienvenida al cliente  */
   		send(atributos->fp, " Bienvenido a mi servidor", 25, 0);
-		
+
 		/* Recibe el tipo de operación (depósito o retiro) */
 		if ((numbytes = recv(atributos->fp, buffer, 1, 0)) == -1) {  
 			perror(" 1 Error en la funcion recv() \n");
@@ -114,6 +113,7 @@ void *CajeroCliente(void * atributosHilo) {
 	  	}
 	  	buffer[numbytes] = '\0';
 	  	operacion = buffer;
+
 
 	  	if (strcmp("r", operacion) == 0) {
 	  		
@@ -151,7 +151,7 @@ void *CajeroCliente(void * atributosHilo) {
 					  	strcpy(hora, HoraCajero(t, tmp));
 
 					  	/* Envia la fecha */
-					  	send(atributos->fp, fecha, 8, 0);
+					  	send(atributos->fp, fecha, 10, 0);
 
 						/* Envia la hora */
 						send(atributos->fp, hora, 5, 0);
@@ -187,7 +187,7 @@ void *CajeroCliente(void * atributosHilo) {
 		  	strcpy(hora, HoraCajero(t, tmp));
 
 		  	/* Envia la fecha */
-		  	send(atributos->fp, fecha, 8, 0);
+		  	send(atributos->fp, fecha, 10, 0);
 
 		  	/* Envia la hora */
 			send(atributos->fp, hora, 5, 0);
@@ -203,6 +203,7 @@ void *CajeroCliente(void * atributosHilo) {
   			}
   		}
   	}
+
 
 	HilosLibres[atributos->hilo] = 1;
 	free(atributos);
